@@ -125,11 +125,9 @@ export class Interpreter {
 
                 this.current = popped;
             } else if (popped.valid === true && popped.iterations === 0) {
-                console.log(popped)
                 if (popped.node instanceof CaseNode || popped.node instanceof MacroNode || popped.node instanceof ConditionMacroNode) {
                     this.current = new NullLocation();
                 } else {
-                    console.log("top")
                     this.current = popped;
                     this.current.position = 0;
                     this.current.valid = false;
@@ -204,7 +202,6 @@ export class Interpreter {
                 this.current = this.current.getCurrent();
             } else {
                 let res = this.checkCondition(this.current.node.condition.condition);
-                console.log(res)
                 if (isRuntimeError(res)) return res
 
                 

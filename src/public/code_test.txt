@@ -60,12 +60,16 @@ Anweisung prüfen1
   wenn IstMarke dann
     umdrehen Schritt RechtsDrehen Schritt umdrehen MarkeSetzen
   *wenn
+  
+
   wenn NichtIstMarke dann
     LinksDrehen
     wenn NichtIstWand dann Schritt sonst LinksDrehen Schritt LinksDrehen
     *wenn
     MarkeSetzen LinksDrehen Schritt LinksDrehen Schritt
   *wenn
+
+  
 *Anweisung
 
 Anweisung linksum

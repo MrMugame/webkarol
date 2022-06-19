@@ -56,6 +56,7 @@ export class Parser {
                 break;
             } else {
                 //return { parsed: [], err: new UnexpectedError(this.currentToken.pos_start, this.currentToken.pos_end) }
+                console.log(this.currentToken)
                 return { text: "test 2" }
             }
 
@@ -160,7 +161,7 @@ export class Parser {
             return { text: "test 8" }
         }
 
-        let [res, endToken]= this.makeExprBody(["wenn"],["endewenn", "*wenn", "sonst"]);
+        let [res, endToken]= this.makeExprBody(["wenn"],["endewenn", "*wenn"], false, ["sonst"]);
         if (isLanguageError(res)) { return res }
 
         let body = res;
@@ -218,11 +219,11 @@ export class Parser {
         return new LoopNode(iteration_count, res, posStart, this.currentToken.posEnd.copy())
     }
 
-    private makeExprBody(openWord: string[], closeWord: string[], dontSkip?: Boolean): [Node[] | LanguageError, Token | undefined] {
+    private makeExprBody(openWord: string[], closeWord: string[], dontSkip: Boolean = false, specialWord?: string[]): [Node[] | LanguageError, Token | undefined] {
         let body: Token[] = [];
         let nesting = 1;
 
-        if (dontSkip === undefined && !dontSkip) {
+        if (!dontSkip) {
             this.advance();
         }
         
@@ -231,8 +232,11 @@ export class Parser {
                 nesting += 1;
             } else if (this.currentToken.match(Tokens.Keyword, closeWord)) {
                 nesting -= 1;
+            } else if (specialWord != undefined && this.currentToken.match(Tokens.Keyword, specialWord) && nesting <= 1) {
+                nesting -= 1;
             }
             
+
             if (this.currentToken.match(Tokens.Eof, null)) {
                 return [{ text: "test 12" }, undefined]
             }
