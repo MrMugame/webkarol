@@ -1,6 +1,6 @@
 import { Nodes, Position } from "./types";
 
-class Node {
+export class Node {
     private type: Nodes;
     posStart: Position;
     posEnd: Position;
@@ -16,72 +16,105 @@ class Node {
     }
 }
 
-export class LoopNode extends Node {
-    constructor(iterations, body) {
-        super(NODES.LOOP_NODE);
-        this.iterations = iterations;
-        this.body = body;
+export class BodyNode extends Node {
+    constructor(type: Nodes, posStart: Position, posEnd: Position, public body: Node[]) {
+        super(type, posStart, posEnd);
+    }
+}
+
+export class LoopNode extends BodyNode {
+    constructor(
+        public iterations: number,
+        body: Node[],
+        posStart: Position,
+        posEnd: Position,
+    ){
+        super(Nodes.LoopNode, posStart, posEnd, body);
     }
 }
 
 export class CallNode extends Node {
-    constructor(func, pos_start, pos_end) {
-        super(NODES.CALL_NODE, pos_start, pos_end);
-        this.func = func;
+    constructor(
+        public name: string,
+        posStart: Position,
+        posEnd: Position
+    ){
+        super(Nodes.CallNode, posStart, posEnd);
     }
 }
 
 export class SpecialCallNode extends Node {
-    constructor(func, pos_start, pos_end) {
-        super(NODES.SPECIAL_CALL_NODE, pos_start, pos_end);
-        this.func = func;
+    constructor(
+        public name: string,
+        posStart: Position,
+        posEnd: Position
+    ){
+        super(Nodes.SpecialCallNode, posStart, posEnd);
     }
 }
 
-export class CaseLoopNode extends Node {
-    constructor(condition, body) {
-        super(NODES.CASE_LOOP_NODE);
-        this.condition = condition;
-        this.body = body;
+export class CaseLoopNode extends BodyNode {
+    constructor(
+        public condition: ConditionNode,
+        body: Node[],
+        posStart: Position,
+        posEnd: Position
+    ){
+        super(Nodes.CaseLoopNode, posStart, posEnd, body);
     }
 }
 
 export class ConditionNode extends Node {
-    constructor(condition, inverted, pos_start, pos_end) {
-        super(NODES.CONDITION_NODE, pos_start, pos_end);
-        this.condition = condition;
-        this.inverted = inverted;
+    constructor(
+        public condition: string,
+        public inverted: boolean,
+        posStart: Position,
+        posEnd: Position
+    ){
+        super(Nodes.ConditionNode, posStart, posEnd);
     }
 }
 
-export class CaseNode extends Node {
-    constructor(condition, body, not_body) {
-        super(NODES.CASE_NODE);
-        this.condition = condition;
-        this.body = body;
-        this.not_body = not_body;
+export class CaseNode extends BodyNode {
+    constructor(
+        public condition: ConditionNode,
+        public notBody: Node[],
+        body: Node[],
+        posStart: Position,
+        posEnd: Position
+    ){
+        super(Nodes.CaseNode, posStart, posEnd, body);
     }
 }
 
-export class MacroNode extends Node {
-    constructor(name, body, pos_start, pos_end) {
-        super(NODES.MACRO_NODE, pos_start, pos_end);
-        this.name = name;
-        this.body = body;
+export class MacroNode extends BodyNode {
+    constructor(
+        public name: string,
+        body: Node[],
+        posStart: Position,
+        posEnd: Position
+    ){
+        super(Nodes.MacroNode, posStart, posEnd, body);
     }
 }
 
-export class ConditionMacroNode extends Node {
-    constructor(name, body, pos_start, pos_end) {
-        super(NODES.CONDITION_MACRO_NODE, pos_start, pos_end);
-        this.name = name;
-        this.body = body;
+export class ConditionMacroNode extends BodyNode {
+    constructor(
+        public name: string,
+        body: Node[],
+        posStart: Position,
+        posEnd: Position
+    ){
+        super(Nodes.ConditionMacroNode, posStart, posEnd, body);
     }
 }
 
-export class ProgramNode extends Node {
-    constructor(body) {
-        super(NODES.PROGRAM_NODE);
-        this.body = body;
+export class ProgramNode extends BodyNode {
+    constructor(
+        body: Node[],
+        posStart: Position,
+        posEnd: Position
+    ){
+        super(Nodes.ProgramNode, posStart, posEnd, body);
     }
 }

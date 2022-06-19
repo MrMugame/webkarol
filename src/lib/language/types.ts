@@ -13,11 +13,10 @@ export class Token {
 
     match(type: Tokens, value: string | null | string[]): boolean {
         if (Array.isArray(value)) {
-            let truthness = false;
             for (let i of value) {
-                truthness = this.value === i
+                if (this.value === i) return true
             }
-            return truthness
+            return false
         } else {
             return this.type === type && (value === null ? true : this.value === value)
         }
@@ -75,6 +74,12 @@ export enum Tokens {
     Rpren,
     Eof,
     Comment
+}
+
+export enum State {
+    Finished,
+    Killed,
+    Running
 }
 
 export const Keywords = [
