@@ -44,10 +44,10 @@ export class Lexer {
                 }
                 tokens.push(res);
             } else if (this.currentChar === '(') {
-                tokens.push(new Token(Tokens.Rpren, null, this.pos.copy(), this.pos.copy()));
+                tokens.push(new Token(Tokens.Lpren, null, this.pos.copy(), this.pos.copy()));
                 this.advance();
             } else if (this.currentChar === ')') {
-                tokens.push(new Token(Tokens.Lpren, null, this.pos.copy(), this.pos.copy()));
+                tokens.push(new Token(Tokens.Rpren, null, this.pos.copy(), this.pos.copy()));
                 this.advance();
             } else {
                 //return {lexed: null, err: new IllegalCharError(this.pos)}

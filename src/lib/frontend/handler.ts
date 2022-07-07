@@ -32,7 +32,10 @@ export class Handler {
                     this.terminal.clear();
                     this.interpreter = this.compile(this.editor.getCode());
                     if (this.interpreter === null) { return }
+                } else if (this.interpreter.next().done === true) {
+                    this.interpreter = this.compile(this.editor.getCode());
                 }
+                
 
                 this.terminal.print(Logtypes.Info, "Karol wurde gestartet");
 
