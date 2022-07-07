@@ -11,16 +11,15 @@ export class Token {
         this.posEnd = posEnd;
     }
 
-    match(type: Tokens, value: string | null | string[]): boolean {
-        if (Array.isArray(value)) {
-            for (let i of value) {
+    match(type: Tokens, ...values: string[]): boolean {
+        if (this.type === type) {
+            for (let i of values) {
                 if (this.value === i) return true
             }
-            return false
+            return values.length > 0 ? false : true
         } else {
-            return this.type === type && (value === null ? true : this.value === value)
+            return false
         }
-
     }
 }
 

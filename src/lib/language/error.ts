@@ -6,6 +6,10 @@ class BasicError {
         public posEnd: Position,
         public text: string
     ){}
+
+    asString(): string {
+        return this.text
+    }
 }
 
 

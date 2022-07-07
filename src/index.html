@@ -4,13 +4,51 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>WebKarol</title>
   </head>
-  <body>
-    <div id="app" class="h-screen">
-      <canvas id="three"></canvas>
-      <button id="btn" >press</button>
+  <body class="flex flex-col h-screen min-h-0 bg-[#252526]">
+    <nav class="w-full py-2 px-4 bg-[#1E1E1E] ">
+      <h1 class="my-50 font-roboto font-extrabold text-2xl text-[#D8D8D8]">RobotKarol</h1>
+    </nav>
+
+    <div class="flex h-screen min-h-0 border-b-2 border-t-2 border-[#BBBBBB] border-opacity-60">
+      <div class="h-full w-1/3 overflow-auto border-r-2 border-[#BBBBBB] border-opacity-60 bg-[#1E1E1E] text-[#D8D8D8] min-w-[400px] font-monaco text-md resize-x">
+        <div id="editor"></div>
+      </div>
+      <div id="test" class="h-full flex-[3] overflow-hidden min-w-[400px]">
+        <canvas id="three" class="w-full h-full"></canvas>
+      </div>
     </div>
+
+    <div class="flex px-2 py-1 bg-[#1E1E1E] items-center">
+      <button class="h-9 w-9 text-[#BBBBBB] text-opacity-60 hover:text-opacity-100" id="play">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <button class="h-9 w-9 text-[#BBBBBB] text-opacity-60 hover:text-opacity-100" id="pause">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <button class="h-9 w-9 text-[#BBBBBB] text-opacity-60 hover:text-opacity-100" id="fast">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M4.555 5.168A1 1 0 003 6v8a1 1 0 001.555.832L10 11.202V14a1 1 0 001.555.832l6-4a1 1 0 000-1.664l-6-4A1 1 0 0010 6v2.798l-5.445-3.63z" />
+        </svg>
+      </button>
+      <button  class="h-9 w-9 text-[#BBBBBB] text-opacity-60 hover:text-opacity-100" id="step">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <button class="ml-20 h-8 w-8 text-[#BBBBBB] text-opacity-60 hover:text-opacity-100" id="reset">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+
+    <div id="out" class="bg-[#1E1E1E] text-[#D8D8D8] font-monaco h-56 w-full flex-shrink-0 pl-4 text-md"></div>
     <script type="module" src="/main.ts"></script>
   </body>
 </html>

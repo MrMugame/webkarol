@@ -23,14 +23,14 @@ export class Parser {
     public parse(): Node[] | LanguageError {
         let result = [];
         
-        while (!this.currentToken.match(Tokens.Eof, null) && this.currentToken !== undefined) {
+        while (!this.currentToken.match(Tokens.Eof) && this.currentToken !== undefined) {
             let res: LanguageError | Node;
 
             if (this.currentToken.match(Tokens.Keyword, "wiederhole")) {
                 this.advance();
                 if (this.currentToken.match(Tokens.Keyword, "solange")) {
                     res = this.makeCaseLoopExpr();
-                } else if (this.currentToken.match(Tokens.Integer, null)) {
+                } else if (this.currentToken.match(Tokens.Integer)) {
                     res = this.makeLoopExpr();
                 } else {
                     //return { parsed: [], err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) }
@@ -44,15 +44,15 @@ export class Parser {
                 res = this.makeConditionExpr();
             } else if (this.currentToken.match(Tokens.Keyword, "Programm")) {
                 res = this.makeProgramExpr()
-            } else if (this.currentToken.match(Tokens.Keyword, ["wahr", "falsch"])) {
+            } else if (this.currentToken.match(Tokens.Keyword, "wahr", "falsch")) {
                 res = new SpecialCallNode(String(this.currentToken.value), this.currentToken.posStart.copy(), this.currentToken.posEnd.copy());
                 this.advance();
-            } else if (this.currentToken.match(Tokens.Identifier, null)) {
+            } else if (this.currentToken.match(Tokens.Identifier)) {
                 res = this.makeCallExpr();
-            } else if (this.currentToken.match(Tokens.Comment, null)){
+            } else if (this.currentToken.match(Tokens.Comment)){
                 this.advance();
                 continue;
-            } else if (this.currentToken.match(Tokens.Eof, null)){
+            } else if (this.currentToken.match(Tokens.Eof)){
                 break;
             } else {
                 //return { parsed: [], err: new UnexpectedError(this.currentToken.pos_start, this.currentToken.pos_end) }
@@ -72,16 +72,16 @@ export class Parser {
 
         this.advance();
 
-        if (this.currentToken.match(Tokens.Lpren, null)) {
+        if (this.currentToken.match(Tokens.Lpren)) {
             this.advance();
-            if (!this.currentToken.match(Tokens.Integer, null)) {
+            if (!this.currentToken.match(Tokens.Integer)) {
                 //return { parsed: [], err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) }
                 return this.createError("Unerwartetes Wort nach der Klammer")
             }
 
             let iterations = parseInt(String(this.currentToken.value));
             this.advance();
-            if (!this.currentToken.match(Tokens.Rpren, null)) {
+            if (!this.currentToken.match(Tokens.Rpren)) {
                 //return { parsed: [], err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) }
                 return this.createError("Klammer muss geschlossen werden")
             }
@@ -108,7 +108,7 @@ export class Parser {
 
         this.advance();
 
-        if (!this.currentToken.match(Tokens.Identifier, null)) {
+        if (!this.currentToken.match(Tokens.Identifier)) {
             //return { parsed: null, err: new NoNameError(this.currentToken.pos_start, this.currentToken.pos_end) };
             return this.createError("Name für Bedingung muss angegeben werden")
         }
@@ -126,7 +126,7 @@ export class Parser {
         let posStart = this.currentToken.posStart.copy();
         this.advance();
 
-        if (!this.currentToken.match(Tokens.Identifier, null)) {
+        if (!this.currentToken.match(Tokens.Identifier)) {
             //return { parsed: null, err: new NoNameError(this.currentToken.pos_start, this.currentToken.pos_end) };
             return this.createError("Name für Anweisung muss angegeben werden")
         }
@@ -148,7 +148,7 @@ export class Parser {
             this.advance();
         }
         
-        if (!this.currentToken.match(Tokens.Identifier, null)) {
+        if (!this.currentToken.match(Tokens.Identifier)) {
             //return { node: null, err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) };
             return this.createError("Auf wenn muss eine Bedingung folgen")
         }
@@ -189,7 +189,7 @@ export class Parser {
             this.advance();
         }
         
-        if (!this.currentToken.match(Tokens.Identifier, null)) {
+        if (!this.currentToken.match(Tokens.Identifier)) {
             //return { node: null, err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) };
             return this.createError("Auf 'solange' muss eine Bedingung folgen")
         }
@@ -227,16 +227,16 @@ export class Parser {
         }
         
         while (nesting > 0) {
-            if (this.currentToken.match(Tokens.Keyword, openWord)) {
+            if (this.currentToken.match(Tokens.Keyword, ...openWord)) {
                 nesting += 1;
-            } else if (this.currentToken.match(Tokens.Keyword, closeWord)) {
+            } else if (this.currentToken.match(Tokens.Keyword, ...closeWord)) {
                 nesting -= 1;
-            } else if (specialWord != undefined && this.currentToken.match(Tokens.Keyword, specialWord) && nesting <= 1) {
+            } else if (specialWord != undefined && this.currentToken.match(Tokens.Keyword, ...specialWord) && nesting <= 1) {
                 nesting -= 1;
             }
             
 
-            if (this.currentToken.match(Tokens.Eof, null)) {
+            if (this.currentToken.match(Tokens.Eof)) {
                 return [this.createError("Ende des Dokumentes wurde erreicht"), undefined]
             }
             body.push(this.currentToken);
