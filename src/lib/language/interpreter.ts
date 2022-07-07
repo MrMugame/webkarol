@@ -1,67 +1,20 @@
+import { World } from "../graphics/World";
 import { isRuntimeError, RuntimeError } from "./error";
-import { BodyNode, CallNode, CaseLoopNode, CaseNode, ConditionMacroNode, LoopNode, MacroNode, Node, ProgramNode, SpecialCallNode } from "./nodes";
-import { Nodes, Position, State } from "./types";
-import { World } from "../graphics/World.js"
+import { CallNode, CaseLoopNode, CaseNode, ConditionMacroNode, LoopNode, MacroNode, Node, ProgramNode, SpecialCallNode } from "./nodes";
+import { State } from "./types";
 
 
-class Location {
-    constructor(
-        public node: Node,
-        public position: number,
-        public valid: Boolean,
-        public iterations: number,
-        public truthness: Boolean
-    ) {}
-
-    getCurrent(notBody?: Boolean): Location {
-        if (this.node instanceof BodyNode) {
-            let current: Node;
-            if (notBody && this.node instanceof CaseNode) {
-                current = this.node.notBody[this.position];
-            } else {
-                current = this.node.body[this.position];
-            }
-
-            if (current === undefined) {
-                if (this.iterations > 1) {
-                    this.iterations -= 1;
-                    this.position = 0;
-                    current = this.node.body[this.position];
-                } else {
-                    return new NullLocation()
-                }
-            }
-
-            return new Location(current, 0, false, 0, true);
-        } else {
-            return new NullLocation()
-        }
-    }
-}
-
-class NullLocation extends Location {
-    constructor() {
-        let pos = new Position(0,0,0,"");
-        super(new Node(Nodes.CallNode, pos, pos), -1, false, 0, true);
-    }
-}
 
 
 export class Interpreter {
     private macroStore: MacroNode[];
     private conditionStore: ConditionMacroNode[];
-    private stack: Location[];
-    private current: Location;
-    private world: World;
+    private programNode: ProgramNode | null;
 
-
-    constructor(world: World, nodes: Node[]) {
+    constructor(private world: World, nodes: Node[]) {
         this.macroStore = [];
         this.conditionStore = [];
-        this.current = new NullLocation();
-        this.world = world;
-
-        this.stack = [];
+        this.programNode = null;
 
         for (let node of nodes) {
             if (node instanceof MacroNode) {
@@ -69,11 +22,11 @@ export class Interpreter {
             } else if (node instanceof ConditionMacroNode) {
                 this.conditionStore.push(node);
             } else if (node instanceof ProgramNode) {
-                this.current = new Location(node, 0, false, 0, true);
+                this.programNode = node;
             } 
         }
 
-        if (this.current instanceof NullLocation) {
+        if (!(this.programNode instanceof ProgramNode)) {
             let buffer: Node[] = [];
 
             for (let node of nodes) {
@@ -83,152 +36,106 @@ export class Interpreter {
             }
 
             if (buffer.length > 0) {
-                this.current = new Location(new ProgramNode(buffer, buffer[0].posStart.copy(),(buffer.at(-1)?.posEnd?.copy()) || buffer[0].posStart.copy()), 0, false, 0, true)
+                this.programNode = new ProgramNode(buffer, buffer[0].posStart.copy(),(buffer.at(-1)?.posEnd?.copy()) || buffer[0].posStart.copy())
             } else {
                 // error
             }
         }
     }
 
-    public interpret(): State | RuntimeError  {
-        //console.log(this.current?.node?.type, this.current?.valid )
-        //console.log(this.stack)
-
-        if (this.current instanceof NullLocation) {
-            let popped = this.stack.pop();
-
-            if (popped === undefined) return State.Finished
-
-            popped.position += 1;
-
-            if (!(popped.getCurrent() instanceof NullLocation)) {
-                this.current = popped;
-            } else if (popped.node instanceof ConditionMacroNode) {
-                let truthness = popped.truthness;
-
-                popped = this.stack.pop();
-
-                if (popped === undefined) return { err: "test" }
-
-                popped.valid = true;
-                if (popped.node instanceof CaseNode) {
-                    if (popped.node.notBody.length == 0 && !truthness) {
-                        popped = new NullLocation();
-                    } else {
-                        popped.truthness = truthness;
-                    }
-                } else if (popped.node instanceof CaseLoopNode) {
-                    if (!truthness) {
-                        popped = new NullLocation();
-                    }
-                }
-
-                this.current = popped;
-            } else if (popped.valid === true && popped.iterations === 0) {
-                if (popped.node instanceof CaseNode || popped.node instanceof MacroNode || popped.node instanceof ConditionMacroNode) {
-                    this.current = new NullLocation();
-                } else {
-                    this.current = popped;
-                    this.current.position = 0;
-                    this.current.valid = false;
-                }
-            } else {
-                this.current = new NullLocation();
-            }
-        } else if (this.current.node instanceof ProgramNode || ((this.current.node instanceof MacroNode || this.current.node instanceof ConditionMacroNode) && this.current.valid))  {
-            this.stack.push(this.current);
-
-            this.current = this.current.getCurrent();
-        } else if (this.current.node instanceof CallNode) {
-            this.stack.push(this.current);
-
-            let res = this.executeCall(this.current.node.name);
-            if (isRuntimeError(res) || res === State.Killed || res === State.Finished || res === State.Running) return res
-
-            if (res !== null) {
-                this.current = new Location(res, 0, true, 0, true);
-            } else {
-                this.current = new NullLocation();
-            }
-        } else if (this.current.node instanceof SpecialCallNode) {
-            this.stack.push(this.current);
-            
-            for (let positions of this.stack) {
-                if (positions.node instanceof ConditionMacroNode) {
-                    positions.truthness = this.current.node.name === "wahr" ? true : false;
-                    this.current = new NullLocation();
-                    return State.Running
-                }
-            }
-
-            //return new SpecialNodePlacmentError(this.current.node.pos_start.copy(), this.current.node.pos_end.copy());
-        } else if (this.current.node instanceof LoopNode) {
-            this.stack.push(this.current);
-            
-            if (this.current.valid) {
-                this.current = this.current.getCurrent();
-            } else {
-                this.current.iterations = this.current.node.iterations;
-                this.current.valid = true;
-            }
-        } else if (this.current.node instanceof CaseNode) {
-            if (this.current.valid) {
-                this.stack.push(this.current);
-                this.current = this.current.getCurrent(!this.current.truthness);
-            } else {
-                let res = this.checkCondition(this.current.node.condition.condition);
-                if (isRuntimeError(res)) return res
-
-                if (res instanceof ConditionMacroNode) {
-                    this.stack.push(this.current);
-                    this.current = new Location(res, 0, true, 0, false);
-                    return State.Running
-                }
-                
-                if (res) {
-                    this.current.valid = true;
-                    this.current.truthness = res;
-                } else if (this.current.node.notBody.length > 0) {
-                    this.current.valid = true;
-                    this.current.truthness = res;
-                } else {
-                    this.current = new NullLocation();
-                }
-                
-            }
-        } else if (this.current.node instanceof CaseLoopNode) {
-            if (this.current.valid) {
-                this.stack.push(this.current);
-                this.current = this.current.getCurrent();
-            } else {
-                let res = this.checkCondition(this.current.node.condition.condition);
-                if (isRuntimeError(res)) return res
-
-                
-                if (res instanceof ConditionMacroNode) {
-                    this.stack.push(this.current);
-                    this.current = new Location(res, 0, true, 0,false);
-                    return State.Running
-                }
-
-                if (this.current.node.condition.inverted ? !res : res) {
-                    this.current.valid = true;
-                } else {
-                    this.current = new NullLocation();
-                }
-            }
-            
-        } else if (this.current.node instanceof MacroNode || this.current.node instanceof ConditionMacroNode) {
-            //return new IllegalMacroError(this.current.node.pos_start.copy(), this.current.node.pos_end.copy())
+    public* run(): Generator<State | Boolean, RuntimeError | State | Boolean, any> {
+        if (this.programNode != null) {
+            const res = yield* this.interpret([this.programNode]);
+            return res;
+        } else {
+            // error
+            return State.Finished
         }
-
-        return State.Running
     }
 
+    private* interpret(nodes: Node[]): Generator<State | Boolean, RuntimeError | State | Boolean, any> {
+        for (const current of nodes) {
+            if (current instanceof ProgramNode)  {
+                yield* this.interpret(current.body);
+            } else if (current instanceof ConditionMacroNode) {
+                let truthness = false;
+                for (let n of this.interpret(current.body)) {
+                    if (n === true) {
+                        truthness = true;
+                        yield State.Running;
+                    } else if (n === false) {
+                        truthness = false;
+                        yield State.Running;
+                    }
+                    yield n;
+                }
+                return truthness;
+            } else if (current instanceof MacroNode) {
+                yield* this.interpret(current.body);
+            } else if (current instanceof CallNode) {
+                const res = this.executeCall(current.name);
+                if (isRuntimeError(res)) return res
+                if (res instanceof MacroNode) {
+                    yield* this.interpret([res]);
+                    continue;
+                }
 
-    private executeCall(name: string): MacroNode | RuntimeError | null | State {
-        let err: null | RuntimeError | State | void = null;
+                yield res
+            } else if (current instanceof SpecialCallNode) {
+                yield current.name === "wahr" ? true : false;
+            } else if (current instanceof LoopNode) {
+                for (let i = 0; i < current.iterations; i++) {
+                    yield* this.interpret(current.body);
+                }
+            } else if (current instanceof CaseNode) {
+                let res = this.checkCondition(current.condition.condition);
+                if (isRuntimeError(res)) return res
 
+                if (res instanceof ConditionMacroNode) {
+                    const val = yield* this.interpret([res]);
+                    if (isRuntimeError(val)) return val
+                    if (val === true || val === false) {
+                        res = val;
+                    } else {
+                        return val;
+                    }
+                }
+
+                
+                if (res) {
+                    yield* this.interpret(current.body);
+                } else {
+                    yield* this.interpret(current.notBody);
+                }
+
+            } else if (current instanceof CaseLoopNode) {
+                while (true) {
+                    let res = this.checkCondition(current.condition.condition);
+                    if (isRuntimeError(res)) return res
+
+                    if (res instanceof ConditionMacroNode) {
+                        const val = yield* this.interpret([res]);
+                        if (isRuntimeError(val)) return val
+                        if (val === true || val === false) {
+                            res = val;
+                        } else {
+                            return val;
+                        }
+                    }
+
+                    if (!res) break;
+
+                    yield* this.interpret(current.body)
+                }
+            }
+        }
+
+        return State.Finished
+    }
+
+    private executeCall(name: string): MacroNode | RuntimeError | State {
+        let err: RuntimeError | State | void = State.Running;
+    
         if (name === "Schritt") {
             err = this.world.step();
         } else if (name === "RechtsDrehen") {
@@ -260,15 +167,15 @@ export class Interpreter {
             //err = new FunctionNotFoundError();
             err = { err: "test" }
         }
-
-        err = null
-
+    
+        err = State.Running;
+    
         return err
     }
 
     private checkCondition(condition: string): ConditionMacroNode | RuntimeError | Boolean {
         let truthness: Boolean;
-
+    
         if (condition === "IstZiegel") {
             truthness = this.world.isbrick();
         } else if (condition === "NichtIstZiegel") {
@@ -298,8 +205,7 @@ export class Interpreter {
             //return new ConditionNotFoundError(this.current.node.condition.pos_start, this.current.node.condition.pos_end);
             return { err: "test" }
         }
-
+    
         return truthness
     }
-
 }

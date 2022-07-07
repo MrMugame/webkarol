@@ -6,7 +6,7 @@ import { Parser } from './lib/language/parser';
 import './style/style.css'
 
 
-fetch("code_test.txt").then((res) => {
+fetch("code_pyramide.txt").then((res) => {
   return res.text()
 }).then((res) => {
   let lexer = new Lexer(res);
@@ -24,9 +24,10 @@ fetch("code_test.txt").then((res) => {
 
   let world = new World("#three")
   let interpreter = new Interpreter(world, ast);
+  let gen = interpreter.run()
   const run = () => {
       world.animate();
-      interpreter.interpret();
+      gen.next();
       window.requestAnimationFrame(run.bind(this));
   }
   run()
