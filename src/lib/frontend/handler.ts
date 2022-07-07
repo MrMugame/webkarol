@@ -127,18 +127,16 @@ export class Handler {
 
             let res = this.interpreter.next();
 
-            let repeat = this.parseExit(res);
+            this.parseExit(res.value);
 
-            if (repeat) {
+            if (!res.done) {
                 this.loop();
             }
             
         }, this.world.speed);
     }
 
-    parseExit(res: IteratorResult<Boolean | State, Boolean | State | RuntimeError>) {
-        let truthness = false;
-        
+    parseExit(res: Boolean | State | RuntimeError) {
         if (typeof res === "number" && res === State.Finished) {
             this.terminal.print(Logtypes.Info, "Karol ist fertig");
             this.interpreter = null;
@@ -151,15 +149,7 @@ export class Handler {
             this.terminal.print(Logtypes.Error, res.asString());
             this.interpreter = null;
             this.running = false;
-        } else if (typeof res === "boolean") {
-            this.terminal.print(Logtypes.Error, "Unbekannter Fehler ist aufgetreten");
-            this.interpreter = null;
-            this.running = false;
-        } else {
-            truthness = true;
         }
-
-        return truthness
     }
 
     gameloop() {

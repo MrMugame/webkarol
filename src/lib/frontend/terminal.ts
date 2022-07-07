@@ -15,7 +15,8 @@ export class Terminal {
 
         prefix += " ";
 
-        this.terminal.innerHTML += prefix + str + "<br>";  
+        this.terminal.innerHTML += prefix + str + "<br>";
+        this.terminal.scrollTop = this.terminal.scrollHeight;
     }
 
     clear() {

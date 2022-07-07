@@ -54,7 +54,8 @@ export class Interpreter {
     private* interpret(nodes: Node[]): Generator<State | Boolean, RuntimeError | State | Boolean, any> {
         for (const current of nodes) {
             if (current instanceof ProgramNode)  {
-                yield* this.interpret(current.body);
+                const res = yield* this.interpret(current.body);
+                if (res instanceof RuntimeError) return res
             } else if (current instanceof ConditionMacroNode) {
                 let truthness = false;
                 for (let n of this.interpret(current.body)) {
@@ -77,16 +78,20 @@ export class Interpreter {
                     res.posEnd = current.posEnd.copy();
                     return res;
                 }
+
                 if (res instanceof MacroNode) {
-                    yield* this.interpret([res]);
+                    const err = yield* this.interpret([res]);
+                    if (err instanceof RuntimeError) return err;
                     continue;
                 }
+
                 yield res
             } else if (current instanceof SpecialCallNode) {
                 yield current.name === "wahr" ? true : false;
             } else if (current instanceof LoopNode) {
                 for (let i = 0; i < current.iterations; i++) {
-                    yield* this.interpret(current.body);
+                    const res = yield* this.interpret(current.body);
+                    if (res instanceof RuntimeError) return res
                 }
             } else if (current instanceof CaseNode) {
                 let res = this.checkCondition(current.condition.condition);
@@ -108,9 +113,11 @@ export class Interpreter {
 
                 
                 if (res) {
-                    yield* this.interpret(current.body);
+                    const res = yield* this.interpret(current.body);
+                    if (res instanceof RuntimeError) return res
                 } else {
-                    yield* this.interpret(current.notBody);
+                    const res = yield* this.interpret(current.notBody);
+                    if (res instanceof RuntimeError) return res
                 }
 
             } else if (current instanceof CaseLoopNode) {
