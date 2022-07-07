@@ -1,15 +1,14 @@
 import { LineSegments, LineBasicMaterial, Float32BufferAttribute, BufferGeometry, Color } from 'three'
 
-class CustomGrid extends LineSegments {
+export class CustomGrid extends LineSegments {
+	constructor( sizeX: number = 10, sizeY: number = 10, divisionsX: number = 10, divisionsY: number = 10, hexColor: number = 0x444444) {
 
-	constructor( sizeX = 10, sizeY = 10, divisionsX = 10, divisionsY = 10, color = 0x444444) {
-
-		color = new Color( color );
+		const color = new Color( hexColor );
 
 		const stepX = sizeX / divisionsX;
         const stepY = sizeY / divisionsY;
 
-		const vertices = [], colors = [];
+		const vertices:number[] = [], colors: number[] = [];
 
         let j = 0;
 
@@ -38,6 +37,3 @@ class CustomGrid extends LineSegments {
 	}
 
 }
-
-
-export { CustomGrid };

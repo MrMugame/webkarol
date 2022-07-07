@@ -1,16 +1,13 @@
-export interface LanguageError {
-    text: string
+import { Position } from "./types"
+
+class BasicError {
+    constructor(
+        public posStart: Position,
+        public posEnd: Position,
+        public text: string
+    ){}
 }
 
-export const isLanguageError = (obj: any): obj is LanguageError => {
-    return 'text' in obj
-}
 
-export interface RuntimeError {
-    err: string
-}
-
-export const isRuntimeError = (obj: any): obj is RuntimeError => {
-    if (typeof obj !== "object") return false
-    return 'err' in (obj || {})
-}
+export class LanguageError extends BasicError {}
+export class RuntimeError extends BasicError {}

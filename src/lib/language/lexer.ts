@@ -1,4 +1,4 @@
-import { isLanguageError, LanguageError } from "./error";
+import { LanguageError } from "./error";
 import { Keywords, Position, Token, Tokens } from "./types";
 
 const LETTERS = new RegExp('[a-zA-ZäöüÄÖÜß*_]');
@@ -28,19 +28,19 @@ export class Lexer {
             if (["\n", ";", " ", "\t"].includes(this.currentChar)) {
                 this.advance();
             } else if (this.currentChar === '{') {
-                let res = this.make_comment();
-                if (isLanguageError(res)) {
-                    return { text: "test" }
+                let res = this.makeComment();
+                if (res instanceof LanguageError) {
+                    return res
                 }
                 tokens.push(res);
             } else if (LETTERS.test(this.currentChar)) {
-                tokens.push(this.make_identifier());
+                tokens.push(this.makeIdentifier());
             } else if (NUMBERS.test(this.currentChar)) {
-                tokens.push(this.make_number());
+                tokens.push(this.makeNumber());
             } else if (this.currentChar === '"') {
-                let res = this.make_string();
-                if (isLanguageError(res)) {
-                    return { text: "test" }
+                let res = this.makeString();
+                if (res instanceof LanguageError)  {
+                    return res
                 }
                 tokens.push(res);
             } else if (this.currentChar === '(') {
@@ -51,7 +51,7 @@ export class Lexer {
                 this.advance();
             } else {
                 //return {lexed: null, err: new IllegalCharError(this.pos)}
-                return { text: "test" }
+                return new LanguageError(this.pos.copy(), this.pos.copy(), "Konnte Charakter nicht identifizieren");
             }
 
         }
@@ -61,7 +61,7 @@ export class Lexer {
         return tokens;
     }
 
-    private make_comment(): Token | LanguageError {
+    private makeComment(): Token | LanguageError {
         const pos_start = this.pos.copy();
         let nesting = 1;
         this.advance();
@@ -69,7 +69,7 @@ export class Lexer {
         while (nesting > 0) {
             if (this.currentChar === null) {
                 //return new UnterminatedCommentError(this.pos.copy())
-                return {text: "test"}
+                return new LanguageError(pos_start.copy(), this.pos.copy(), "Der Kommentar wurde nicht beendet");
             }
 
             if (this.currentChar === '{') {
@@ -84,7 +84,7 @@ export class Lexer {
         return new Token(Tokens.Comment, null, pos_start, this.pos.copy());
     }
 
-    private make_identifier(): Token {
+    private makeIdentifier(): Token {
         let pos_start = this.pos.copy();
         let str = "";
 
@@ -98,7 +98,7 @@ export class Lexer {
         return new Token(token_type, str, pos_start, this.pos.copy());
     }
 
-    private make_number(): Token {
+    private makeNumber(): Token {
         let pos_start = this.pos.copy();
         let str = "";
 
@@ -110,7 +110,7 @@ export class Lexer {
         return new Token(Tokens.Integer, parseInt(str), pos_start, this.pos.copy());
     }
 
-    private make_string(): Token | LanguageError {
+    private makeString(): Token | LanguageError {
         let pos_start = this.pos.copy();
         let str = "";
         this.advance();
@@ -118,7 +118,7 @@ export class Lexer {
         while (this.currentChar != '"') {
             if (this.currentChar === null) {
                 //return new UnterminatedStringError(this.pos.copy());
-                return {text: "test"}
+                return new LanguageError(pos_start.copy(), this.pos.copy(), "Die Zeichenkette wurde nicht beendet");
             }
             str += this.currentChar;
             this.advance();

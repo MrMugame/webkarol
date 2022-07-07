@@ -1,7 +1,7 @@
-import { World } from "../graphics/World";
-import { isRuntimeError, RuntimeError } from "./error";
+import { World } from "../graphics/world";
+import { RuntimeError } from "./error";
 import { CallNode, CaseLoopNode, CaseNode, ConditionMacroNode, LoopNode, MacroNode, Node, ProgramNode, SpecialCallNode } from "./nodes";
-import { State } from "./types";
+import { Position, State } from "./types";
 
 
 
@@ -37,8 +37,6 @@ export class Interpreter {
 
             if (buffer.length > 0) {
                 this.programNode = new ProgramNode(buffer, buffer[0].posStart.copy(),(buffer.at(-1)?.posEnd?.copy()) || buffer[0].posStart.copy())
-            } else {
-                // error
             }
         }
     }
@@ -48,8 +46,8 @@ export class Interpreter {
             const res = yield* this.interpret([this.programNode]);
             return res;
         } else {
-            // error
-            return State.Finished
+            let pos = new Position(0,0,0,"");
+            return new RuntimeError(pos, pos,"Unerwartetes Wort nach wiederhole")
         }
     }
 
@@ -74,12 +72,15 @@ export class Interpreter {
                 yield* this.interpret(current.body);
             } else if (current instanceof CallNode) {
                 const res = this.executeCall(current.name);
-                if (isRuntimeError(res)) return res
+                if (res instanceof RuntimeError) {
+                    res.posStart = current.posStart.copy();
+                    res.posEnd = current.posEnd.copy();
+                    return res;
+                }
                 if (res instanceof MacroNode) {
                     yield* this.interpret([res]);
                     continue;
                 }
-
                 yield res
             } else if (current instanceof SpecialCallNode) {
                 yield current.name === "wahr" ? true : false;
@@ -89,11 +90,15 @@ export class Interpreter {
                 }
             } else if (current instanceof CaseNode) {
                 let res = this.checkCondition(current.condition.condition);
-                if (isRuntimeError(res)) return res
+                if (res instanceof RuntimeError) {
+                    res.posStart = current.posStart.copy();
+                    res.posEnd = current.posEnd.copy();
+                    return res;
+                }
 
                 if (res instanceof ConditionMacroNode) {
                     const val = yield* this.interpret([res]);
-                    if (isRuntimeError(val)) return val
+                    if (val instanceof RuntimeError) return val
                     if (val === true || val === false) {
                         res = val;
                     } else {
@@ -111,11 +116,15 @@ export class Interpreter {
             } else if (current instanceof CaseLoopNode) {
                 while (true) {
                     let res = this.checkCondition(current.condition.condition);
-                    if (isRuntimeError(res)) return res
+                    if (res instanceof RuntimeError) {
+                        res.posStart = current.posStart.copy();
+                        res.posEnd = current.posEnd.copy();
+                        return res;
+                    }
 
                     if (res instanceof ConditionMacroNode) {
                         const val = yield* this.interpret([res]);
-                        if (isRuntimeError(val)) return val
+                        if (val instanceof RuntimeError) return val
                         if (val === true || val === false) {
                             res = val;
                         } else {
@@ -139,15 +148,15 @@ export class Interpreter {
         if (name === "Schritt") {
             err = this.world.step();
         } else if (name === "RechtsDrehen") {
-            err = this.world.rotate_right();
+            err = this.world.rotateRight();
         } else if (name === "LinksDrehen") {
-            err = this.world.rotate_left();
+            err = this.world.rotateLeft();
         } else if (name === "Hinlegen") {
             err = this.world.drop();
         } else if (name === "MarkeSetzen") {
-            err = this.world.set_mark();
+            err = this.world.setMark();
         } else if (name === "MarkeLöschen") {
-            err = this.world.delete_mark();
+            err = this.world.deleteMark();
         } else if (name === "Schnell") {
             err = this.world.fast();
         } else if (name === "Langsam") {
@@ -165,7 +174,7 @@ export class Interpreter {
                 }
             }
             //err = new FunctionNotFoundError();
-            err = { err: "test" }
+            return new RuntimeError(new Position(0,0,0,""), new Position(0,0,0,""), "Konnte Funktion nicht finden");
         }
     
         err = State.Running;
@@ -203,7 +212,7 @@ export class Interpreter {
                 }
             }
             //return new ConditionNotFoundError(this.current.node.condition.pos_start, this.current.node.condition.pos_end);
-            return { err: "test" }
+            return new RuntimeError(new Position(0,0,0,""), new Position(0,0,0,""), "Konnte Bedingung nicht finden");
         }
     
         return truthness

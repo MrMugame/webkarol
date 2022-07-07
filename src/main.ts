@@ -1,5 +1,5 @@
-import { World } from './lib/graphics/World';
-import { isLanguageError } from './lib/language/error';
+import { World } from './lib/graphics/world';
+import { LanguageError } from './lib/language/error';
 import { Interpreter } from './lib/language/interpreter';
 import { Lexer } from './lib/language/lexer'
 import { Parser } from './lib/language/parser';
@@ -12,7 +12,7 @@ fetch("code_pyramide.txt").then((res) => {
   let lexer = new Lexer(res);
   let tokens = lexer.tokenize();
 
-  if (isLanguageError(tokens)) return tokens
+  if (tokens instanceof LanguageError) return tokens
 
   console.log(tokens);
 
@@ -20,9 +20,11 @@ fetch("code_pyramide.txt").then((res) => {
   let ast = parser.parse();
   console.log(ast);
 
-  if (isLanguageError(ast)) return ast
+  if (ast instanceof LanguageError) return ast
 
-  let world = new World("#three")
+  const ctx = document.querySelector("#three");
+  if (!ctx) return
+  let world = new World(ctx);
   let interpreter = new Interpreter(world, ast);
   let gen = interpreter.run()
   const run = () => {
@@ -35,6 +37,6 @@ fetch("code_pyramide.txt").then((res) => {
 
   let button = document.querySelector("#btn")
   button?.addEventListener("click", () => {
-    interpreter.interpret();
+    gen.next();
   })
 })

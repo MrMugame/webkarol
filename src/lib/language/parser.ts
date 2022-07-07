@@ -1,4 +1,4 @@
-import { isLanguageError, LanguageError } from "./error";
+import { LanguageError } from "./error";
 import { CallNode, CaseLoopNode, CaseNode, ConditionMacroNode, ConditionNode, LoopNode, MacroNode, Node, ProgramNode, SpecialCallNode } from "./nodes";
 import { Position, Token, Tokens } from "./types";
 
@@ -34,7 +34,7 @@ export class Parser {
                     res = this.makeLoopExpr();
                 } else {
                     //return { parsed: [], err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) }
-                    return { text: "test 1" }
+                    return this.createError("Unerwartetes Wort nach wiederhole")
                 }
             } else if (this.currentToken.match(Tokens.Keyword, "wenn")) {
                 res = this.makeCaseExpr();
@@ -56,11 +56,10 @@ export class Parser {
                 break;
             } else {
                 //return { parsed: [], err: new UnexpectedError(this.currentToken.pos_start, this.currentToken.pos_end) }
-                console.log(this.currentToken)
-                return { text: "test 2" }
+                return this.createError("Unerwarteter Fehler")
             }
 
-            if (isLanguageError(res)) { return res }
+            if (res instanceof LanguageError) { return res }
             result.push(res);
         }
 
@@ -77,14 +76,14 @@ export class Parser {
             this.advance();
             if (!this.currentToken.match(Tokens.Integer, null)) {
                 //return { parsed: [], err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) }
-                return { text: "test 3" }
+                return this.createError("Unerwartetes Wort nach der Klammer")
             }
 
             let iterations = parseInt(String(this.currentToken.value));
             this.advance();
             if (!this.currentToken.match(Tokens.Rpren, null)) {
                 //return { parsed: [], err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) }
-                return { text: "test 4" }
+                return this.createError("Klammer muss geschlossen werden")
             }
 
             this.advance();
@@ -98,7 +97,7 @@ export class Parser {
         let posStart = this.currentToken.posStart.copy();
 
         let [res, _] = this.makeExprBody(["Programm"], ["endeProgramm", "*Programm"]);
-        if (isLanguageError(res)) { return res }
+        if (res instanceof LanguageError) { return res }
 
         //this.advance();
         return new ProgramNode(res, posStart, this.currentToken.posEnd.copy());
@@ -111,13 +110,13 @@ export class Parser {
 
         if (!this.currentToken.match(Tokens.Identifier, null)) {
             //return { parsed: null, err: new NoNameError(this.currentToken.pos_start, this.currentToken.pos_end) };
-            return { text: "test 5" }
+            return this.createError("Name für Bedingung muss angegeben werden")
         }
 
         let name = String(this.currentToken.value);
 
         let [res, _] = this.makeExprBody(["Bedingung"], ["endeBedingung", "*Bedingung"]);
-        if (isLanguageError(res)) { return res }
+        if (res instanceof LanguageError) { return res }
 
         this.advance();
         return new ConditionMacroNode(name, res, posStart, this.currentToken.posEnd.copy())
@@ -129,12 +128,12 @@ export class Parser {
 
         if (!this.currentToken.match(Tokens.Identifier, null)) {
             //return { parsed: null, err: new NoNameError(this.currentToken.pos_start, this.currentToken.pos_end) };
-            return { text: "test 6" }
+            return this.createError("Name für Anweisung muss angegeben werden")
         }
         let name = String(this.currentToken.value);
 
         let [res, _] = this.makeExprBody(["Anweisung"], ["endeAnweisung", "*Anweisung"]);
-        if (isLanguageError(res)) { return res }
+        if (res instanceof LanguageError) { return res }
 
         return new MacroNode(name, res, posStart, this.currentToken.posEnd.copy())
     }
@@ -151,18 +150,18 @@ export class Parser {
         
         if (!this.currentToken.match(Tokens.Identifier, null)) {
             //return { node: null, err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) };
-            return { text: "test 7" }
+            return this.createError("Auf wenn muss eine Bedingung folgen")
         }
         let condition = this.currentToken;
         
         this.advance();
         if (!this.currentToken.match(Tokens.Keyword, "dann")) {
             //return { node: null, err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) };
-            return { text: "test 8" }
+            return this.createError("Auf Bedingung muss das Wort 'dann' folgen")
         }
 
         let [res, endToken]= this.makeExprBody(["wenn"],["endewenn", "*wenn"], false, ["sonst"]);
-        if (isLanguageError(res)) { return res }
+        if (res instanceof LanguageError) { return res }
 
         let body = res;
 
@@ -170,7 +169,7 @@ export class Parser {
 
         if (endToken !== undefined && endToken.match(Tokens.Keyword, "sonst")) {
             let [res, _]= this.makeExprBody(["wenn"], ["endewenn", "*wenn"], true);
-            if (isLanguageError(res)) { return res }
+            if (res instanceof LanguageError) { return res }
 
 
             notBody = res;
@@ -192,13 +191,13 @@ export class Parser {
         
         if (!this.currentToken.match(Tokens.Identifier, null)) {
             //return { node: null, err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) };
-            return { text: "test 9" }
+            return this.createError("Auf 'solange' muss eine Bedingung folgen")
         }
 
         let condition = this.currentToken;
 
         let [res, _] = this.makeExprBody(["wiederhole"], ["endewiederhole", "*wiederhole"]);
-        if (isLanguageError(res)) { return res }
+        if (res instanceof LanguageError) { return res }
 
         return new CaseLoopNode(new ConditionNode(String(condition.value), inverted, condition.posStart.copy(), condition.posEnd.copy()) , res, posStart, this.currentToken.posEnd.copy())
     }
@@ -210,11 +209,11 @@ export class Parser {
         this.advance();
         if (!this.currentToken.match(Tokens.Keyword, "mal")) {
             //return { node: null, err: new UnexpectedTokenError(this.currentToken.pos_start, this.currentToken.pos_end) };
-            return { text: "test 11" }
+            return this.createError("Auf die Wiederholungsanzahl muss 'mal' folgen")
         }
 
         let [res, _] = this.makeExprBody(["wiederhole"], ["endewiederhole", "*wiederhole"]);
-        if (isLanguageError(res)) { return res }
+        if (res instanceof LanguageError) { return res }
 
         return new LoopNode(iteration_count, res, posStart, this.currentToken.posEnd.copy())
     }
@@ -238,7 +237,7 @@ export class Parser {
             
 
             if (this.currentToken.match(Tokens.Eof, null)) {
-                return [{ text: "test 12" }, undefined]
+                return [this.createError("Ende des Dokumentes wurde erreicht"), undefined]
             }
             body.push(this.currentToken);
             
@@ -251,5 +250,9 @@ export class Parser {
 
         let parser = new Parser(body);
         return [parser.parse(), endWord];
+    }
+
+    private createError(text: string): LanguageError {
+        return new LanguageError(this.currentToken.posEnd.copy(), this.currentToken.posEnd.copy(), text);
     }
 }
