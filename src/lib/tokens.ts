@@ -1,3 +1,5 @@
+import { copy } from "./util";
+
 enum TokenType {
 	// Keywords
 	WIEDERHOLE,
@@ -36,6 +38,10 @@ class Span {
 		readonly start: Span.Position,
 		readonly end: Span.Position
 	) {}
+
+	public static concat(start: Span, end: Span) {
+		return new Span(copy(start.start), copy(end.end));
+	}
 }
 namespace Span {
 	export interface Position {
@@ -63,17 +69,20 @@ const KEYWORDS = new Map<string, TokenType>([
 	[ "sonst", TokenType.SONST ],
 	[ "nicht", TokenType.NICHT ],
 	[ "immer", TokenType.IMMER ],
-	[ "endewenn", TokenType. ENDE_WENN ],
+	[ "endewenn", TokenType.ENDE_WENN ],
 	[ "*wenn", TokenType.ENDE_WENN ],
-	[ "Anweisung", TokenType.ANWEISUNG ],
-	[ "endeAnweisung", TokenType.ENDE_ANWEISUNG ],
-	[ "*Anweisung", TokenType.ENDE_ANWEISUNG ],
-	[ "Bedingung", TokenType.BEDINGUNG ],
-	[ "endeBedingung", TokenType.ENDE_BEDINGUNG ],
-	[ "*Bedingung", TokenType.ENDE_BEDINGUNG ],
-	[ "Programm", TokenType.PROGRAMM ],
-	[ "endeProgramm", TokenType.ENDE_PROGRAMM ],
-	[ "*Programm", TokenType.ENDE_PROGRAMM ],
+	[ "methode", TokenType.ANWEISUNG ],
+	[ "anweisung", TokenType.ANWEISUNG ],
+	[ "endeanweisung", TokenType.ENDE_ANWEISUNG ],
+	[ "*anweisung", TokenType.ENDE_ANWEISUNG ],
+	[ "endemethode", TokenType.ENDE_ANWEISUNG ],
+	[ "*methode", TokenType.ENDE_ANWEISUNG ],
+	[ "bedingung", TokenType.BEDINGUNG ],
+	[ "endebedingung", TokenType.ENDE_BEDINGUNG ],
+	[ "*bedingung", TokenType.ENDE_BEDINGUNG ],
+	[ "programm", TokenType.PROGRAMM ],
+	[ "endeprogramm", TokenType.ENDE_PROGRAMM ],
+	[ "*programm", TokenType.ENDE_PROGRAMM ],
 	[ "wahr", TokenType.WAHR ],
 	[ "falsch", TokenType.FALSCH ]
 ]);

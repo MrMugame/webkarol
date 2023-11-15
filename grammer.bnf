@@ -1,0 +1,24 @@
+
+<file> ::= {<decl>} {<stmt>}
+
+<decl> :: <funcDecl> | <condDecl> | <progDecl>
+
+<funcDecl> ::= anweisung <identifier> <body> (endeanweisung | *anweisung)
+<condDecl> ::= bedingung <identifier> <body> (endebedingung | *bedingung)
+<progDecl> ::= programm <body> (endeprogramm | *programm)
+
+
+<stmt> ::=  <condLoopStmt> | <iterLoopStmt> | <inftyLoopStmt> | <ifStmt> | <callStmt>
+
+<condLoopStmt> ::= wiederhole solange [nicht] <cond> <body> (endewiederhole | *wiederhole)
+<iterLoopStmt> ::= wiederhole <number> mal <body> (endewiederhole | *wiederhole)
+<inftyLoopStmt> ::= wiederhole immer <body> (endewiederhole | *wiederhole)
+<ifStmt> ::= wenn [nicht] <cond> dann <body> [sonst <body>] endewenn
+<callStmt> :: <identifier> [([<identifier> | <number>])]
+
+<body> ::= {<stmt>}
+
+
+;; Predeclared
+<number>
+<identifier>
