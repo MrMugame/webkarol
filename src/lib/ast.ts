@@ -97,6 +97,7 @@ class CallStmt extends Stmt {
     }
 }
 
+// Not really a statement, but ...
 class CondStmt extends Stmt {
     constructor(
         position: Span,

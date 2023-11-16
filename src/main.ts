@@ -1,13 +1,14 @@
-import { Lexer } from "./lib/lexer"
-import { TokenType } from "./lib/tokens";
+import { Parser } from "./lib/parser";
+import { assert } from "./lib/util";
 
-window.onload = () => {
-	let l = new Lexer("Anweisung { Test() \"Hello World\" *Anweisung {Comment");
+window.onload = async () => {
+	let res = await fetch("examples/pyramide.txt");
+	assert(res.ok, "Response wasn't ok");
+	
+	let p = new Parser(await res.text());
 
-	let i = 0;
-	while (l.currToken.type != TokenType.EOF && i < 100) {
-		l.next_token();
-		console.log(l.currToken);
-		i++;
-	}
+	let ast = p.parse();
+
+	if (ast.isOk()) console.log(ast.unwrap());
+	else console.log(ast.unwrapErr());
 }
