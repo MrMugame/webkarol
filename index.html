@@ -1,13 +1,31 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/main.css" />
     <title>Webkarol</title>
   </head>
   <body>
-    <div id="app"></div>
+    <!-- NAVBAR -->
+    <div class="navbar">
+
+      <!-- File dropdown -->
+      <div class="dropdown">
+        <button class="dropdown-button" onclick="this.parentElement.classList.toggle('active')">Datei</button>
+        <div class="dropdown-content">
+          <button>Neu</button>
+          <button id="btn-open">Öffnen</button>
+          <button>Speichern</button>
+          <button>Speichern unter...</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BODY -->
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
