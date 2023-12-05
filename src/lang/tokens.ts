@@ -44,7 +44,7 @@ class Span {
 	}
 }
 namespace Span {
-	export interface Position {
+	export type Position = {
 		line: number,
 		column: number,
 	}

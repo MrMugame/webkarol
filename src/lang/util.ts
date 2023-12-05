@@ -27,7 +27,7 @@ type Constructor<T> = new (...args: any[]) => T;
 export const is = <T>(type: Constructor<T>, value: any): boolean => value instanceof type;
 
 export const assert = (condition: boolean, msg: string): void => { 
-    if(condition) return;
+    if (condition) return;
 
     alert(msg);
 

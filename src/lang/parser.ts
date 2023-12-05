@@ -52,11 +52,11 @@ export class Parser extends Lexer {
 		while (this.at(TK.BEDINGUNG, TK.ANWEISUNG, TK.PROGRAMM)) {
 			let decl = this.parseDecl();
 			if (!decl.isOk()) return Err(decl.unwrapErr());
-			
+
 			result.push(decl.unwrap());
-			
+
 			if (is(ProgDecl, decl.unwrap())) return Ok(result);
-		}	
+		}
 
 		let body: Stmt[] = [];
 		let loc = this.location();
@@ -142,7 +142,7 @@ export class Parser extends Lexer {
 
 	private parseLoop(): Result<CondLoopStmt | InftyLoopStmt | IterLoopStmt> {
 		let loc = this.location()
-		
+
 		assert(this.consume(TK.WIEDERHOLE), "parseLoop() was called without `wiederhole`");
 
 		if (this.at(TK.SOLANGE)) return this.parseCondLoop(loc);
@@ -155,14 +155,14 @@ export class Parser extends Lexer {
 	// <condLoopStmt> ::= wiederhole solange <cond> <body> (endewiederhole | *wiederhole)
 	private parseCondLoop(loc: Span): Result<CondLoopStmt> {
 		assert(this.consume(TK.SOLANGE), "parseCondLoop() was called without `solange`");
-		
+
 		let cond = this.parseCond();
 		if (!cond.isOk()) return Err(cond.unwrapErr());
 
 		let body = this.parseBody(TK.ENDE_WIEDERHOLE);
 		if (!body.isOk()) return Err(body.unwrapErr());
 		this.nextToken();
-		
+
 		return Ok(new CondLoopStmt(Span.concat(loc, this.location()), cond.unwrap(), body.unwrap()));
 	}
 
@@ -241,7 +241,7 @@ export class Parser extends Lexer {
 	// <cond> ::= [nicht] <identifier> [([<identifier> | <number>])]
 	private parseCond(): Result<CondStmt> {
 		let loc = this.location();
-		
+	
 		let not = this.consume(TK.NICHT);
 
 		let name = this.currToken.value;
