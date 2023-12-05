@@ -45,8 +45,8 @@ class Span {
 }
 namespace Span {
 	export type Position = {
-		line: number,
-		column: number,
+		line: number
+		column: number
 	}
 }
 
