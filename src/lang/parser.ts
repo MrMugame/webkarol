@@ -11,7 +11,7 @@ export class Parser extends Lexer {
 	}
 
 	private at(...tokens: TK[]): boolean {
-		// TODO: Assert if length of last == zero
+		assert(tokens.length != 0, "at() was called without an argument");
 		for (let token of tokens) {
 			if (token === this.currToken.type) return true;
 		}
@@ -44,8 +44,8 @@ export class Parser extends Lexer {
 		// 2. After the decls there can then be statements. If there is no program
 		// declaration, those statements are the program. If there is a program declaration
 		// it will be used.
-		// 3. If a free floating statement sequence is used, there can't be any methods after
-		// it. If not, you can declare functions after the programm declaration but they won't
+		// 3. If a free floating statement sequence is used, there can't be any method declarations
+		// after it. If not, you can declare functions after the programm declaration but they won't
 		// be parsed
 		// ==> If the program decleration is found the parsing will end
 
@@ -241,7 +241,7 @@ export class Parser extends Lexer {
 	// <cond> ::= [nicht] <identifier> [([<identifier> | <number>])]
 	private parseCond(): Result<CondStmt> {
 		let loc = this.location();
-	
+
 		let not = this.consume(TK.NICHT);
 
 		let name = this.currToken.value;
