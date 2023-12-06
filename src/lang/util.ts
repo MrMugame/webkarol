@@ -1,4 +1,4 @@
-export class Result<T, E extends Error = Error> {
+class Result<T, E extends Error = Error> {
     private constructor(
         private ok: boolean,
         private value: T | null,
@@ -8,7 +8,6 @@ export class Result<T, E extends Error = Error> {
     public static Ok = <T>(val: T): Result<T, any> => new Result(true, val, null);
     public static Err = <E extends Error>(err: E): Result<any, E> => new Result(false, null, err);
 
-    // TODO: Add proper assert / check for null here
     public unwrap = (): T => {
         assert(this.value != null, "Couldn't unwrap result because it was null");
         return this.value!;
@@ -21,15 +20,17 @@ export class Result<T, E extends Error = Error> {
     public isOk = (): boolean => this.ok;
 }
 
-export const copy = <T = Object>(value: T): T => <T>{...value};
+const copy = <T = Object>(value: T): T => <T>{...value};
 
 type Constructor<T> = new (...args: any[]) => T;
-export const is = <T>(type: Constructor<T>, value: any): boolean => value instanceof type;
+const is = <T>(type: Constructor<T>, value: any): boolean => value instanceof type;
 
-export const assert = (condition: boolean, msg: string): void => { 
+const assert = (condition: boolean, msg: string): void => {
     if (condition) return;
 
     alert(msg);
 
     throw new Error(msg);
 }
+
+export { Result, copy, is, assert }
