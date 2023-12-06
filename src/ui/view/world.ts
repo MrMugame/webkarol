@@ -1,6 +1,7 @@
 //import { Result } from "../../lang/util";
 
 import { assert } from "../../lang/util"
+import { View } from "./view"
 
 //const Err = Result.Err, Ok = Result.Ok;
 
@@ -66,8 +67,21 @@ class World {
     constructor(size: WorldSize, view: View) {
         this.size = size;
         this.view = view;
+        this.view.setWorld(this);
         this.world = new Array(this.size.x).fill(null).map(() => new Array(this.size.y).fill(null));
         this.player = { x: 0, y: 0, direction: Rotation.South };
+    }
+
+    get cells(): Cell[][] {
+        return this.world;
+    }
+
+    get playerPosition(): PlayerPosition {
+        return this.player;
+    }
+
+    get worldSize(): WorldSize {
+        return this.size;
     }
 
     private cellInFront(): [number, number] {
@@ -114,20 +128,20 @@ class World {
         this.player.x = x;
         this.player.y = y;
 
-        this.view.invalidatePlayer();
+        this.view.redraw();
     }
 
     rotateLeft() {
         // https://stackoverflow.com/questions/4467539/javascript-modulo-gives-a-negative-result-for-negative-numbers
         this.player.direction = ((this.player.direction - 1 % 4) + 4) % 4;
 
-        this.view.invalidatePlayer();
+        this.view.redraw();
     }
 
     rotateRight() {
         this.player.direction = this.player.direction + 1 % 4;
 
-        this.view.invalidatePlayer();
+        this.view.redraw();
     }
 
     placeBrick() {
@@ -143,12 +157,12 @@ class World {
 
         let cell = this.world[x][y];
         if (cell === null) {
-            cell = { kind: CellType.Bricks, count: 1, mark: null };
+            this.world[x][y] = { kind: CellType.Bricks, count: 1, mark: null };
         } else if (cell.kind === CellType.Bricks) {
             cell.count += 1;
         }
 
-        this.view.invalidateCell(x, y);
+        this.view.redraw();
     }
 
     pickupBrick() {
@@ -165,7 +179,7 @@ class World {
         let cell = this.world[x][y];
         if (cell?.kind === CellType.Bricks) cell.count -= 1;
 
-        this.view.invalidateCell(x, y);
+        this.view.redraw();
     }
 
     // Set mark doesn't error for some reason
@@ -175,12 +189,12 @@ class World {
         assert(cell?.kind != CellType.Cuboid, "Karol is standing on a cuboid?!");
 
         if (cell === null) {
-            cell = { kind: CellType.Bricks, count: 0, mark: color };
+            this.world[this.player.x][this.player.y] = { kind: CellType.Bricks, count: 0, mark: color };
         } else if (cell.kind == CellType.Bricks) {
             cell.mark = color;
         }
 
-        this.view.invalidateCell(this.player.x, this.player.y);
+        this.view.redraw();
     }
 
     // Remove mark doesnt error either
@@ -195,12 +209,11 @@ class World {
             cell.mark = null;
         }
 
-        this.view.invalidateCell(this.player.x, this.player.y);
+        this.view.redraw();
     }
 
     // TODO: Sound
 
-
 }
 
-export { World }
+export { World, CellType, MarkColor }
