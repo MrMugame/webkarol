@@ -1,4 +1,4 @@
-import { BLOCKSIZE, MARGIN, View } from "./view";
+import { BLOCKSIZE, COLORS, MARGIN, View } from "./view";
 import { CellType, World } from "./world";
 
 
@@ -70,12 +70,7 @@ class BirdeyeView implements View {
         let ctx = this.background.getContext("2d");
         if (ctx === null) return; // TODO: Maybe try regenerating the canvas here? (+Foreground)
 
-        let [width, height] = [this.background.width, this.background.height];
-
-        //ctx.fillStyle = "#fff";
-        //ctx.fillRect(0, 0, width, height);
-        ctx.clearRect(0, 0, this.foreground.width, this.foreground.height);
-
+        ctx.clearRect(0, 0, this.background.width, this.background.height);
         this.initCanvas(ctx);
 
         ctx.strokeStyle = "#0000ff";
@@ -102,8 +97,9 @@ class BirdeyeView implements View {
         if (ctx === null) return;
 
         ctx.clearRect(0, 0, this.foreground.width, this.foreground.height);
-
         this.initCanvas(ctx);
+
+        let m = 3;
 
         for (let i = 0; i < this.world.worldSize.x; i++) {
             for (let k = 0; k < this.world.worldSize.y; k++) {
@@ -115,9 +111,9 @@ class BirdeyeView implements View {
                 if (cell.kind === CellType.Bricks) {
                     // TODO: Make color changable
 
-                    let m = ctx.lineWidth = 3;
+                    ctx.lineWidth = m;
                     if (cell.mark !== null) {
-                        ctx.fillStyle = "#ffff00";
+                        ctx.fillStyle = COLORS.get(cell.mark)!;
                         ctx.strokeStyle = "#000000";
 
                         ctx.fillRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
@@ -143,17 +139,17 @@ class BirdeyeView implements View {
 
         let {x, y, direction} = this.world.playerPosition;
         y *= BLOCKSIZE;
-        x * BLOCKSIZE;
+        x *= BLOCKSIZE;
 
         ctx.fillStyle = "#000000";
         ctx.translate(x+BLOCKSIZE/2, y+BLOCKSIZE/2);
         ctx.rotate(direction*(Math.PI/2));
 
         ctx.beginPath();
-        ctx.moveTo(0,           -BLOCKSIZE/2);
-        ctx.lineTo(-BLOCKSIZE/2, BLOCKSIZE/2);
-        ctx.lineTo(BLOCKSIZE/2,  BLOCKSIZE/2);
-        ctx.lineTo(0,           -BLOCKSIZE/2);
+        ctx.moveTo(0,           -BLOCKSIZE/2+m);
+        ctx.lineTo(-BLOCKSIZE/2+m/2, BLOCKSIZE/2-m);
+        ctx.lineTo( BLOCKSIZE/2-m/2,  BLOCKSIZE/2-m);
+        ctx.lineTo(0,           -BLOCKSIZE/2+m);
         ctx.fill();
         ctx.closePath();
     }

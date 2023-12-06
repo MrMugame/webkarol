@@ -1,7 +1,13 @@
-import { World } from "./world";
+import { MarkColor, World } from "./world";
 
 const MARGIN = { x: 30, y: 30 };
 const BLOCKSIZE = 50;
+const COLORS = new Map([
+    [MarkColor.Yellow, "#ffff00"],
+    [MarkColor.Green, "#00ff00"],
+    [MarkColor.Red, "#ff0000"],
+    [MarkColor.Blue, "#0000ff"]
+]);
 
 interface View {
     redraw(): void;
@@ -16,5 +22,5 @@ interface View {
     setWorld(world: World): void;
 }
 
-export { MARGIN, BLOCKSIZE }
+export { MARGIN, BLOCKSIZE, COLORS }
 export type { View }

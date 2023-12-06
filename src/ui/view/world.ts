@@ -116,6 +116,11 @@ class World {
         return cell?.kind === CellType.Bricks && cell.count <= 0
     }
 
+    // The methods on the world always just take one argument. This has the reason that with a count
+    // argument, we couldn't easily mimic the behaviour, that karol shows where he is gonna run into
+    // the wall knowing that it wouldn't work on the first move.
+    // So a call like schritt(5) just gets expanded to a loop wiederhole 5 mal schritt endewiederhole
+
     step() {
         let [x, y] = this.cellInFront();
 
