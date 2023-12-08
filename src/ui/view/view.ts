@@ -1,12 +1,14 @@
-import { MarkColor, World } from "./world";
+import { Color, World } from "./world";
 
 const MARGIN = { x: 30, y: 30 };
 const BLOCKSIZE = 50;
-const COLORS = new Map([
-    [MarkColor.Yellow, "#ffff00"],
-    [MarkColor.Green, "#00ff00"],
-    [MarkColor.Red, "#ff0000"],
-    [MarkColor.Blue, "#0000ff"]
+
+type ColorPair = { background: string, stroke: string };
+const COLORS: Map<Color, ColorPair> = new Map([
+    [Color.Yellow, { background: "#cdcd00", stroke: "#ffff00" }],
+    [Color.Green, { background: "#00cd00", stroke: "#00ff00" }],
+    [Color.Red, { background: "#cd0000", stroke: "#ff0000" }],
+    [Color.Blue, { background: "#0000cd", stroke: "#0000ff" }]
 ]);
 
 interface View {

@@ -113,14 +113,15 @@ class BirdeyeView implements View {
 
                     ctx.lineWidth = m;
                     if (cell.mark !== null) {
-                        ctx.fillStyle = COLORS.get(cell.mark)!;
+                        ctx.fillStyle = COLORS.get(cell.mark)!.stroke;
                         ctx.strokeStyle = "#000000";
 
                         ctx.fillRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
                         ctx.strokeRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
-                    } else if (cell.count > 0) {
-                        ctx.fillStyle = "#cd0000";
-                        ctx.strokeStyle = "#ff0000";
+                    } else if (cell.bricks.length > 0) {
+                        let pair = COLORS.get(cell.bricks[cell.bricks.length - 1])!;
+                        ctx.fillStyle = pair.background;
+                        ctx.strokeStyle = pair.stroke;
 
                         ctx.fillRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
                         ctx.strokeRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
@@ -129,7 +130,7 @@ class BirdeyeView implements View {
                         ctx.font = "30px sans-serif";
                         ctx.textAlign = "center";
                         ctx.textBaseline = "middle";
-                        ctx.fillText(cell.count.toString(), x + BLOCKSIZE/2, y + BLOCKSIZE/2);
+                        ctx.fillText(cell.bricks.length.toString(), x + BLOCKSIZE/2, y + BLOCKSIZE/2);
                     }
                 } else if (cell.kind === CellType.Cuboid) {
                     // TODO: Draw cuboid

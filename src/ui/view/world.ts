@@ -40,8 +40,8 @@ type Cuboid = {
 
 type Bricks = {
     kind: CellType.Bricks
-    count: number
-    mark: MarkColor | null
+    bricks: Color[]
+    mark: Color | null
 }
 
 const enum CellType {
@@ -49,7 +49,7 @@ const enum CellType {
     Cuboid
 }
 
-const enum MarkColor {
+const enum Color {
     Yellow,
     Green,
     Blue,
@@ -107,13 +107,13 @@ class World {
     private cellIsFull(x: number, y: number): boolean {
         let cell = this.world[x][y];
 
-        return cell?.kind === CellType.Bricks && cell.count >= this.size.z;
+        return cell?.kind === CellType.Bricks && cell.bricks.length >= this.size.z;
     }
 
     private cellIsEmpty(x: number, y: number): boolean {
         let cell = this.world[x][y];
 
-        return cell?.kind === CellType.Bricks && cell.count <= 0
+        return cell?.kind === CellType.Bricks && cell.bricks.length === 0
     }
 
     // The methods on the world always just take one argument. This has the reason that with a count
@@ -127,7 +127,7 @@ class World {
         if (this.cellExists(x, y)) {
             return; // TODO: Karol cant walk into wall
         } else if (this.cellIsCuboid(x, y)) {
-            return; // TODO: Karol cant walk into wall
+            return; // TODO: Karol cant walk into cuboid
         } // TODO: Handle case of cell being above certain level, where karol cant jump
 
         this.player.x = x;
@@ -149,7 +149,7 @@ class World {
         this.view.redraw();
     }
 
-    placeBrick() {
+    placeBrick(color: Color = Color.Red) {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
@@ -162,9 +162,9 @@ class World {
 
         let cell = this.world[x][y];
         if (cell === null) {
-            this.world[x][y] = { kind: CellType.Bricks, count: 1, mark: null };
+            this.world[x][y] = { kind: CellType.Bricks, bricks: [color], mark: null };
         } else if (cell.kind === CellType.Bricks) {
-            cell.count += 1;
+            cell.bricks.push(color);
         }
 
         this.view.redraw();
@@ -182,20 +182,20 @@ class World {
         }
 
         let cell = this.world[x][y];
-        if (cell?.kind === CellType.Bricks) cell.count -= 1;
+        if (cell?.kind === CellType.Bricks) cell.bricks.pop();
 
         this.view.redraw();
     }
 
     // Set mark doesn't error for some reason
-    setMark(color: MarkColor) {
+    setMark(color: Color) {
         let cell = this.world[this.player.x][this.player.y];
 
         assert(cell?.kind != CellType.Cuboid, "Karol is standing on a cuboid?!");
 
         if (cell === null) {
-            this.world[this.player.x][this.player.y] = { kind: CellType.Bricks, count: 0, mark: color };
-        } else if (cell.kind == CellType.Bricks) {
+            this.world[this.player.x][this.player.y] = { kind: CellType.Bricks, bricks: [], mark: color };
+        } else if (cell.kind === CellType.Bricks) {
             cell.mark = color;
         }
 
@@ -210,7 +210,7 @@ class World {
 
         if (cell === null) {
             return;
-        } else if (cell.kind == CellType.Bricks) {
+        } else if (cell.kind === CellType.Bricks) {
             cell.mark = null;
         }
 
@@ -223,4 +223,4 @@ class World {
 
 }
 
-export { World, CellType, MarkColor }
+export { World, CellType, Color }
