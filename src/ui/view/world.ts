@@ -60,7 +60,7 @@ class World {
     private readonly size: WorldSize;
     private world: Cell[][]; // x, y
     private player: PlayerPosition;
-    //private speed: "schnell" | "langsam";
+    // TODO: private speed: "schnell" | "langsam";
 
     private view: View;
 
@@ -218,6 +218,8 @@ class World {
     }
 
     // TODO: Sound
+
+    // TODO: Backpack
 
 }
 
