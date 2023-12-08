@@ -23,7 +23,7 @@ class Result<T, E extends Error = Error> {
 const copy = <T = Object>(value: T): T => <T>{...value};
 
 type Constructor<T> = new (...args: any[]) => T;
-const is = <T>(type: Constructor<T>, value: any): boolean => value instanceof type;
+const is = <T>(type: Constructor<T>, value: any): value is T => value instanceof type;
 
 const assert = (condition: boolean, msg: string): void => {
     if (condition) return;
