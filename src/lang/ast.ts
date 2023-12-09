@@ -97,6 +97,15 @@ class CallStmt extends Stmt {
     }
 }
 
+class TruthStmt extends Stmt {
+    constructor(
+        position: Span,
+        readonly value: boolean
+    ) {
+        super(position);
+    }
+}
+
 // Not really a statement, but ...
 class CondStmt extends Stmt {
     constructor(
@@ -109,6 +118,6 @@ class CondStmt extends Stmt {
     }
 }
 
-export { Stmt, CondLoopStmt, IterLoopStmt, InftyLoopStmt, IfStmt, CallStmt, CondStmt }
+export { Stmt, CondLoopStmt, IterLoopStmt, InftyLoopStmt, IfStmt, CallStmt, TruthStmt, CondStmt }
 
 

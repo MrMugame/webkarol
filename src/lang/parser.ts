@@ -1,7 +1,7 @@
 import { Lexer } from "./lexer";
 import { Span, TokenType as TK } from "./tokens";
 import { Result, assert, copy, is } from "./util";
-import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, InftyLoopStmt, IterLoopStmt, ProgDecl, Stmt } from "./ast"
+import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, InftyLoopStmt, IterLoopStmt, ProgDecl, Stmt, TruthStmt } from "./ast"
 
 const Err = Result.Err, Ok = Result.Ok;
 
@@ -222,26 +222,29 @@ export class Parser extends Lexer {
 		return Ok(new IfStmt(Span.concat(loc, this.location()), cond.unwrap(), body.unwrap(), else_));
 	}
 
-	// TODO: Factor out call and condition
-	// <callStmt> ::= <identifier> [([<identifier> | <number>])]
-	private parseCall(): Result<CallStmt> {
+	// <callStmt> ::= <identifier> [<params>]
+	private parseCall(): Result<CallStmt | TruthStmt> {
 		let loc = this.location();
 
 		let name = this.currToken.value;
-		if (!this.consume(TK.IDENTIFIER)) return Err(new Error(";; WIP ;; Couldn't find Identifier Token in call"));
+		if (this.at(TK.WAHR, TK.FALSCH)) {
+			let stmt = new TruthStmt(Span.concat(loc, this.location()), this.at(TK.WAHR));
+
+			this.consume(TK.WAHR, TK.FALSCH);
+			return Ok(stmt);
+		} else if (!this.consume(TK.IDENTIFIER)) return Err(new Error(";; WIP ;; Couldn't find Identifier Token in call"));
 
 		let value : string | number | null = null;
-		if (this.consume(TK.LPREN)) {
-			value = this.at(TK.INT_LITERAL) ? parseInt(this.currToken.value!) : this.currToken.value;
-			this.consume(TK.INT_LITERAL, TK.IDENTIFIER);
-
-			if (!this.consume(TK.RPREN)) return Err(new Error(";; WIP ;; Expected ) after call ("));
+		if (this.at(TK.LPREN)) {
+			let res = this.parseParams();
+			if (!res.isOk()) return Err(res.unwrapErr());
+			value = res.unwrap();
 		}
 
 		return Ok(new CallStmt(Span.concat(loc, this.location()), name!, value));
 	}
 
-	// <cond> ::= [nicht] <identifier> [([<identifier> | <number>])]
+	// <cond> ::= [nicht] <identifier> [<params>]
 	private parseCond(): Result<CondStmt> {
 		let loc = this.location();
 
@@ -251,15 +254,27 @@ export class Parser extends Lexer {
 		if (!this.consume(TK.IDENTIFIER)) return Err(new Error(";; WIP ;; Couldn't find Indentifier Token in condition"));
 
 		let value : string | number | null = null;
-		if (this.consume(TK.LPREN)) {
-			value = this.at(TK.INT_LITERAL) ? parseInt(this.currToken.value!) : this.currToken.value;
-			this.consume(TK.INT_LITERAL, TK.IDENTIFIER);
-
-			if (!this.consume(TK.RPREN)) return Err(new Error(";; WIP ;; Expected ) after condition ("));
+		if (this.at(TK.LPREN)) {
+			let res = this.parseParams();
+			if (!res.isOk()) return Err(res.unwrapErr());
+			value = res.unwrap();
 		}
 
 		return Ok(new CondStmt(Span.concat(loc, this.location()), name!, not, value));
 	}
+	
+	// <params> ::= ([<identifier> | <number>])
+	private parseParams(): Result<string | number> {
+		assert(this.consume(TK.LPREN), "parseParams() was called without `(`")
+
+		let value = this.at(TK.INT_LITERAL) ? parseInt(this.currToken.value!) : this.currToken.value;
+		if (!this.consume(TK.INT_LITERAL, TK.IDENTIFIER) || value === null) return Err(new Error(";; WIP ;; Didnt expect ... after ("));
+
+		if (!this.consume(TK.RPREN)) return Err(new Error(";; WIP ;; Expected ) after ("));
+		
+		return Ok(value);
+	}
+
 
 
 	// <body> ::= {<stmt>}
