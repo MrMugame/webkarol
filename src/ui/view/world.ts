@@ -49,6 +49,7 @@ const enum CellType {
     Cuboid
 }
 
+// Add black for marks
 const enum Color {
     Yellow,
     Green,
@@ -217,10 +218,42 @@ class World {
         this.view.redraw();
     }
 
+    isWall(): boolean {
+        let [x, y] = this.cellInFront();
+        return this.cellExists(x, y) || this.cellIsCuboid(x, y);
+    }
+
+    // Don't use 1 as the default value directly, because I don't wanna see one undefined here ever
+    isBrick(count: number | null = null, color: Color | null = null): boolean {
+        assert(count === 1 ? color !== null : color === null, "Cannot pass both count and color to isBrick()");
+        let [x, y] = this.cellInFront();
+
+        let cell = this.world[x][y];
+        if (cell?.kind === CellType.Bricks) {
+            if (color !== null) {
+                return cell.bricks.some(x => x === color);
+            } else return cell.bricks.length >= (count ?? 1);
+        } else return false;
+    }
+
+    isMark(color: Color | null = null): boolean {
+        let cell = this.world[this.player.x][this.player.y];
+        
+        if (cell?.kind === CellType.Bricks) {
+            if (color !== null) {
+                return cell.mark !== null;
+            } else return cell.mark === color;
+        } else return false;
+    }
+
+    isRotation(rot: Rotation): boolean {
+        return this.player.direction === rot;
+    }
+
     // TODO: Sound
 
     // TODO: Backpack
 
 }
 
-export { World, CellType, Color }
+export { World, CellType, Color, Rotation }
