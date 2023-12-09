@@ -1,6 +1,6 @@
 //import { Result } from "../../lang/util";
 
-import { assert } from "../../lang/util"
+import { Result, assert } from "../../lang/util"
 import { View } from "./view"
 
 //const Err = Result.Err, Ok = Result.Ok;
@@ -56,6 +56,8 @@ const enum Color {
     Blue,
     Red
 }
+
+const Err = Result.Err, Ok = Result.Ok;
 
 class World {
     private readonly size: WorldSize;
@@ -122,45 +124,47 @@ class World {
     // the wall knowing that it wouldn't work on the first move.
     // So a call like schritt(5) just gets expanded to a loop wiederhole 5 mal schritt endewiederhole
 
-    step() {
+    step(): Result<null> {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
-            return; // TODO: Karol cant walk into wall
+            return Err(new Error(";; WIP ;; Karol cant walk into wall"));
         } else if (this.cellIsCuboid(x, y)) {
-            return; // TODO: Karol cant walk into cuboid
+            return Err(new Error(";; WIP ;; Karol cant walk into cuboid"));
         } // TODO: Handle case of cell being above certain level, where karol cant jump
 
         this.player.x = x;
         this.player.y = y;
 
         this.view.redraw();
+        return Ok(null);
     }
 
-    rotateLeft() {
+    rotateLeft(): void {
         // https://stackoverflow.com/questions/4467539/javascript-modulo-gives-a-negative-result-for-negative-numbers
         this.player.direction = ((this.player.direction - 1 % 4) + 4) % 4;
 
         this.view.redraw();
     }
 
-    rotateRight() {
-        this.player.direction = this.player.direction + 1 % 4;
+    rotateRight(): void {
+        this.player.direction = (this.player.direction + 1) % 4;
 
         this.view.redraw();
     }
 
-    placeBrick(color: Color = Color.Red) {
+    placeBrick(color: Color | null): Result<null> {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
-            return; // TODO: Karol cant place because of a wall
+            return Err(new Error(";; WIP ;; Karol cant place because of a wall"));
         } else if (this.cellIsCuboid(x, y)) {
-            return; // TODO: Karol cell infront is a cuboid
+            return Err(new Error(";; WIP ;; Karol cell infront is a cuboid"));
         } else if (this.cellIsFull(x, y)) {
-            return; // TODO: Karol cell is full
+            return Err(new Error(";; WIP ;; Karol cell is full"));
         }
 
+        color = color ?? Color.Red;
         let cell = this.world[x][y];
         if (cell === null) {
             this.world[x][y] = { kind: CellType.Bricks, bricks: [color], mark: null };
@@ -169,27 +173,30 @@ class World {
         }
 
         this.view.redraw();
+        return Ok(null);
     }
 
-    pickupBrick() {
+    pickupBrick(): Result<null> {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
-            return; // TODO: Karol cant place because of a wall
+            return Err(new Error(";; WIP ;; Karol cant place because of a wall"));
         } else if (this.cellIsCuboid(x, y)) {
-            return; // TODO: Karol cell infront is a cuboid
+            return Err(new Error(";; WIP ;; Karol cell infront is a cuboid"));
         } else if (this.cellIsEmpty(x, y)) {
-            return; // TODO: Karol cell pickup because cell is empty
+            return Err(new Error(";; WIP ;; Karol cell is empty"));
         }
 
         let cell = this.world[x][y];
         if (cell?.kind === CellType.Bricks) cell.bricks.pop();
 
         this.view.redraw();
+        return Ok(null);
     }
 
     // Set mark doesn't error for some reason
-    setMark(color: Color) {
+    setMark(color: Color | null): void {
+        color = color ?? Color.Yellow;
         let cell = this.world[this.player.x][this.player.y];
 
         assert(cell?.kind != CellType.Cuboid, "Karol is standing on a cuboid?!");
@@ -204,7 +211,7 @@ class World {
     }
 
     // Remove mark doesnt error either
-    removeMark() {
+    removeMark(): void {
         let cell = this.world[this.player.x][this.player.y];
 
         assert(cell?.kind != CellType.Cuboid, "Karol is standing on a cuboid?!");
@@ -240,7 +247,7 @@ class World {
         let cell = this.world[this.player.x][this.player.y];
         
         if (cell?.kind === CellType.Bricks) {
-            if (color !== null) {
+            if (color === null) {
                 return cell.mark !== null;
             } else return cell.mark === color;
         } else return false;
@@ -250,7 +257,9 @@ class World {
         return this.player.direction === rot;
     }
 
-    // TODO: Sound
+    beep(): void {
+        assert(false, "TODO: Implement sound");
+    }
 
     // TODO: Backpack
 
