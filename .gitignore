@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Outout from Lezer
+src/ui/panel/grammar/parser.js
+src/ui/panel/grammar/parser.terms.js
