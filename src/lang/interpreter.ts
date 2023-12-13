@@ -58,9 +58,7 @@ export class Interpreter {
     private insideCond = false; // TODO: I think the real karol does some kind of sema to check this. Maybe we should too?
     private state = false;
 
-    constructor(private readonly code: Decl[], private readonly world: World) {
-
-    }
+    constructor(private readonly code: Decl[], private readonly world: World) {}
 
     public *interpret(): Generator<void, Result<null>, undefined> {
         let programNode = this.code.find(x => is(ProgDecl, x));
@@ -121,7 +119,7 @@ export class Interpreter {
                 yield;
             } else {
                 let decl = this.code.find(x => is(FuncDecl, x) && x.name === stmt.name);
-                if (decl === undefined) return Err(new Error(";; WIP ;; Couldn't find cond decl"));
+                if (decl === undefined) return Err(new Error(";; WIP ;; Couldn't find call decl"));
                 let res = yield* this.executeStmts(decl.body);
                 if (!res.isOk()) return res;
             }
@@ -145,12 +143,14 @@ export class Interpreter {
             let decl = this.code.find(x => is(CondDecl, x) && x.name == cond.name);
             if (decl === undefined) return Err(new Error(";; WIP ;; Couldn't find cond decl"));
 
-            this.state = false, this.insideCond = true;
+            this.insideCond = true;
+            this.state = false;
 
             let res = yield* this.executeStmts(decl.body);
             if (!res.isOk()) return Err(res.unwrapErr());
 
-            truthy = this.state, this.insideCond = false;
+            this.insideCond = false;
+            truthy = this.state;
         }
 
         return Ok(cond.not ? !truthy : truthy);
