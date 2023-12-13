@@ -1,6 +1,6 @@
 import { copy } from "./util";
 
-enum TokenType {
+const enum TokenType {
 	// Keywords
 	WIEDERHOLE,
 	MAL,
@@ -45,6 +45,7 @@ class Span {
 }
 namespace Span {
 	export type Position = {
+		idx: number
 		line: number
 		column: number
 	}
