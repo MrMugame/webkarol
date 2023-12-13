@@ -1,4 +1,4 @@
-import { KEYWORDS, Span, Token, TokenType } from "./tokens";
+import { KEYWORDS, Span, Token, TokenType as TK } from "./tokens";
 import { copy } from "./util";
 // TODO: $lib alias in vite
 
@@ -7,31 +7,30 @@ const LETTER = /[[a-zA-ZäöüÄÖÜß*_]/;
 
 export class Lexer {
 	private input: string
-	private index: number
 	private start: Span.Position
 	private position: Span.Position
 	public currToken: Token
 
+	// TODO: Fix double index
 	constructor(input: string) {
 		this.input = input;
-		this.index = -1;
-		this.position = { line: 1, column: -1 };
+		this.position = { line: 1, column: -1, idx: -1 };
 		this.start = this.position;
-		this.currToken = new Token(TokenType.INVALID, new Span(this.start, this.start), null);
+		this.currToken = new Token(TK.INVALID, new Span(this.start, this.start), null);
 		this.nextChar();
 	}
 
 	private get currChar(): string {
-		return this.input[this.index] ?? "\0";
+		return this.input[this.position.idx] ?? "\0";
 	}
 
 	private isAtEnd(): boolean {
-		return this.index >= this.input.length;
+		return this.position.idx >= this.input.length;
 	}
 
 	private nextChar(): void {
+		this.position.idx += 1;
 		this.position.column += 1;
-		this.index += 1;
 
 		if (this.currChar === "\n") {
 			this.position.line += 1;
@@ -39,7 +38,7 @@ export class Lexer {
 		}
 	}
 
-	private setToken(type: TokenType, value: string | null = null): void {
+	private setToken(type: TK, value: string | null = null): void {
 		this.currToken = new Token(type, new Span({ ...this.start }, { ...this.position }), value)
 	}
 
@@ -49,7 +48,7 @@ export class Lexer {
 		while (!this.isAtEnd() && /[ \t\n;]/.test(this.currChar)) this.nextChar();
 
 		if (this.isAtEnd()) {
-			this.setToken(TokenType.EOF);
+			this.setToken(TK.EOF);
 			return;
 		}
 
@@ -57,7 +56,7 @@ export class Lexer {
 
 		switch (this.currChar) {
 			case "{": {
-				let prevIndex = this.index;
+				let prevIndex = this.position.idx;
 
 				// TODO: Make this an actually Token for syntax highlighting
 
@@ -67,7 +66,7 @@ export class Lexer {
 
 					if (this.isAtEnd()) {
 						// Normal karol also doesn't error on multiline comments which aren't closed.
-						this.index = prevIndex;
+						this.position.idx = prevIndex;
 						break;
 					}
 				}
@@ -87,11 +86,11 @@ export class Lexer {
 			// } break;
 			case "(": {
 				this.nextChar();
-				this.setToken(TokenType.LPREN);
+				this.setToken(TK.LPREN);
 			} break;
 			case ")": {
 				this.nextChar();
-				this.setToken(TokenType.RPREN);
+				this.setToken(TK.RPREN);
 			} break;
 			// Same with strings
 			// case "\"": {
@@ -119,7 +118,7 @@ export class Lexer {
 						this.nextChar();
 					}
 
-					this.setToken(TokenType.INT_LITERAL, num);
+					this.setToken(TK.INT_LITERAL, num);
 				} else if (LETTER.test(this.currChar)) {
 					let sym: string = "";
 					while (!this.isAtEnd() && (NUMBER.test(this.currChar) || LETTER.test(this.currChar))) {
@@ -131,7 +130,7 @@ export class Lexer {
 					if (KEYWORDS.has(sym)) {
 						this.setToken(KEYWORDS.get(sym)!);
 					} else {
-						this.setToken(TokenType.IDENTIFIER, sym)
+						this.setToken(TK.IDENTIFIER, sym)
 					}
 				} else {
 					// Just yeet unknown tokens
