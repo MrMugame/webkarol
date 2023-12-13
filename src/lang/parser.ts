@@ -5,6 +5,9 @@ import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, Inf
 
 const Err = Result.Err, Ok = Result.Ok;
 
+// TODO: method keyword
+// TODO: builtin functions arent allowed to be redeclared and colors are also not working i think
+
 // This language is probably easy enough to be implemented without a parser,
 // by just reading and intrepreting the text directly, but ... yeah ... we
 // are not doing that to keep it organized.
