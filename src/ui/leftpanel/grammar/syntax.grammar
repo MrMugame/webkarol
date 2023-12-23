@@ -114,9 +114,9 @@ Color { Rot | Gruen | Blau | Gelb | Schwarz }
 	spaces { (@whitespace | ";")+ }
 
 	// TODO: Properly handle "*"
-	identifier { "*"? letter (@digit | letter)+ }
+	identifier { "*"? letter (@digit | letter)* }
 
-	letter { @asciiLetter | "ü" | "ä" | "ö" | "_" }
+	letter { @asciiLetter | "ü" | "ä" | "ö" | "Ü" | "Ä" | "Ö" | "_" }
 
 	Number { @digit+ }
 

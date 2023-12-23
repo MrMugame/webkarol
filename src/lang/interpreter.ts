@@ -110,7 +110,7 @@ export class Interpreter {
             } else if (stmt.else_ !== null) {
                 let res = yield* this.executeStmts(stmt.else_);
                 if (!res.isOk()) return res;
-            } 
+            }
         } else if (is(CallStmt, stmt)) {
             let callback = commands.get(stmt.name.toLowerCase());
             if (callback !== undefined) {

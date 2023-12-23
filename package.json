@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "build-grammar": "lezer-generator src/ui/panel/grammar/syntax.grammar -o src/ui/panel/grammar/parser"
+    "build-grammar": "lezer-generator src/ui/leftpanel/grammar/syntax.grammar -o src/ui/leftpanel/grammar/parser"
   },
   "devDependencies": {
     "@lezer/generator": "^1.5.1",
