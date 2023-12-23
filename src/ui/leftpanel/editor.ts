@@ -1,4 +1,4 @@
-import { keymap, highlightSpecialChars, drawSelection, dropCursor, lineNumbers, EditorView, highlightActiveLine } from "@codemirror/view"
+import { keymap, highlightSpecialChars, drawSelection, dropCursor, lineNumbers, EditorView, highlightActiveLine, ViewUpdate } from "@codemirror/view"
 import { Extension, EditorState } from "@codemirror/state"
 import { defaultHighlightStyle, syntaxHighlighting, indentOnInput, foldGutter, foldKeymap, indentUnit } from "@codemirror/language"
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands"
@@ -8,8 +8,14 @@ import { lintKeymap } from "@codemirror/lint"
 import { karolTheme } from "./theme"
 import { KarolPackage } from "./grammar/karol"
 
+const persistentContent = EditorView.updateListener.of((update: ViewUpdate) => {
+    if (!update.docChanged) return;
+    localStorage.setItem("editor-content", update.state.doc.toString());
+});
+
 // Removed: autocompletion, rectangularSelection, highlightActiveLine
-export const extensions: Extension = (() => [
+const extensions: Extension = [
+    persistentContent,
     karolTheme,
     KarolPackage(),
     highlightActiveLine(),
@@ -32,13 +38,13 @@ export const extensions: Extension = (() => [
     ...foldKeymap,
     ...lintKeymap
     ])
-])()
+]
 
 export class Editor {
 
     constructor() {
         let state = EditorState.create({
-            doc: "Anweisung Wurstsalat\n    Schritt(5)\nendeAnweisung",
+            doc: localStorage.getItem("editor-content") || "",
             extensions: extensions
         });
 
