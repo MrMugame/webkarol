@@ -1,9 +1,9 @@
-import { keymap, highlightSpecialChars, drawSelection, dropCursor, lineNumbers, EditorView, highlightActiveLine, ViewUpdate } from "@codemirror/view"
+import { keymap, drawSelection, dropCursor, lineNumbers, EditorView, highlightActiveLine, ViewUpdate } from "@codemirror/view"
 import { Extension, EditorState } from "@codemirror/state"
-import { defaultHighlightStyle, syntaxHighlighting, indentOnInput, foldGutter, foldKeymap, indentUnit } from "@codemirror/language"
+import { indentOnInput, foldGutter, foldKeymap, indentUnit } from "@codemirror/language"
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands"
 import { searchKeymap, highlightSelectionMatches} from "@codemirror/search"
-import { completionKeymap, closeBracketsKeymap, closeBrackets} from "@codemirror/autocomplete"
+import { closeBracketsKeymap, closeBrackets} from "@codemirror/autocomplete"
 import { lintKeymap } from "@codemirror/lint"
 import { karolTheme } from "./theme"
 import { KarolPackage } from "./grammar/karol"
@@ -41,17 +41,21 @@ const extensions: Extension = [
 ]
 
 export class Editor {
+    private view: EditorView;
 
-    constructor() {
+    constructor(element: HTMLElement) {
         let state = EditorState.create({
             doc: localStorage.getItem("editor-content") || "",
             extensions: extensions
         });
 
-        let view = new EditorView({
+        this.view = new EditorView({
             state: state,
-            parent: document.querySelector("#editor")!
+            parent: element
         })
+    }
 
+    getText(): string {
+        return this.view.state.doc.toString();
     }
 }

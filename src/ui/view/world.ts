@@ -63,11 +63,12 @@ class World {
     private readonly size: WorldSize;
     private world: Cell[][]; // x, y
     private player: PlayerPosition;
-    // TODO: private speed: "schnell" | "langsam";
+    private speed: "fast" | "slow";
 
     private view: View;
 
     constructor(size: WorldSize, view: View) {
+        this.speed = "slow";
         this.size = size;
         this.view = view;
         this.view.setWorld(this);
@@ -85,6 +86,18 @@ class World {
 
     get worldSize(): WorldSize {
         return this.size;
+    }
+
+    getSpeed(): number {
+        return this.speed === "fast" ? 10 : 50;
+    }
+
+    setSlow(): void {
+        this.speed = "slow";
+    }
+
+    setFast(): void {
+        this.speed = "fast";
     }
 
     private cellInFront(): [number, number] {
