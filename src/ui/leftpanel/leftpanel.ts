@@ -1,7 +1,7 @@
 import "./editor";
 
 document.querySelector("#left-panel-handle")!.addEventListener("mousedown", () => {
-    const resize = (event: MouseEvent) => {        
+    const resize = (event: MouseEvent) => {
         document.querySelector("#left-panel")!.setAttribute("style", `width: ${event.pageX}px;`)
     };
 

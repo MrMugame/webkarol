@@ -30,7 +30,6 @@ export const extensions: Extension = (() => [
     ...searchKeymap,
     ...historyKeymap,
     ...foldKeymap,
-    ...completionKeymap,
     ...lintKeymap
     ])
 ])()
