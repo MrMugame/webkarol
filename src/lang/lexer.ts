@@ -39,7 +39,7 @@ export class Lexer {
 	}
 
 	private setToken(type: TK, value: string | null = null): void {
-		this.currToken = new Token(type, new Span({ ...this.start }, { ...this.position }), value)
+		this.currToken = new Token(type, new Span(copy(this.start), copy(this.position)), value)
 	}
 
 	// Lexer never erros. Not my decision
