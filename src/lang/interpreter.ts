@@ -1,6 +1,6 @@
 import { Color, Rotation, World } from "../ui/view/world";
 import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, InftyLoopStmt, IterLoopStmt, ProgDecl, Stmt, TruthStmt } from "./ast";
-import { Result, flatten, is } from "./util";
+import { KarolError, Result, flatten, is } from "./util";
 
 const colors: Map<string, Color> = new Map([
     ["rot", Color.Red],
@@ -51,6 +51,7 @@ const commands: Map<string, WorldFunction<Result<null>>> = new Map([
 ]);
 
 const Err = Result.Err, Ok = Result.Ok;
+type RuntimeResult<T> = Result<T, KarolError>;
 
 export class Interpreter {
     // State variable used when executing a CondDecl
@@ -58,11 +59,11 @@ export class Interpreter {
     private insideCond = false; // TODO: I think the real karol does some kind of sema to check this. Maybe we should too?
     private state = false;
 
-    constructor(private readonly code: Decl[], private readonly world: World) {}
+    constructor(private readonly code: Decl[], readonly world: World) {}
 
-    public *interpret(): Generator<void, Result<null>, undefined> {
+    public *interpret(): Generator<void, RuntimeResult<null>, undefined> {
         let programNode = this.code.find(x => is(ProgDecl, x));
-        if (programNode == undefined) return Err(new Error(";; WIP ;; Couldn't find program node"));
+        if (programNode == undefined) return Err(new KarolError(";; WIP ;; Couldn't find program node", this.code[0].position));
 
         let res = yield* this.executeStmts(programNode.body);
         if (!res.isOk()) return res;
@@ -70,7 +71,7 @@ export class Interpreter {
         return Ok(null);
     }
 
-    private *executeStmts(stmts: Stmt[]): Generator<void, Result<null>, undefined> {
+    private *executeStmts(stmts: Stmt[]): Generator<void, RuntimeResult<null>, undefined> {
         for (let stmt of stmts) {
             let res = yield* this.executeStmt(stmt);
             if (!res.isOk()) return res;
@@ -79,7 +80,7 @@ export class Interpreter {
         return Ok(null);
     }
 
-    private *executeStmt(stmt: Stmt): Generator<void, Result<null>, undefined> {
+    private *executeStmt(stmt: Stmt): Generator<void, RuntimeResult<null>, undefined> {
         // Stmt, CondLoopStmt, IterLoopStmt, InftyLoopStmt, IfStmt, CallStmt, CondStmt
         if (is(CondLoopStmt, stmt)) {
             while (true) {
@@ -115,33 +116,33 @@ export class Interpreter {
             let callback = commands.get(stmt.name.toLowerCase());
             if (callback !== undefined) {
                 let res = flatten(this.executeInternalCallback(callback, stmt.parameter));
-                if (!res.isOk()) return res;
+                if (!res.isOk()) return Err(new KarolError(res.unwrapErr().message, stmt.position));
                 yield;
             } else {
                 let decl = this.code.find(x => is(FuncDecl, x) && x.name === stmt.name);
-                if (decl === undefined) return Err(new Error(";; WIP ;; Couldn't find call decl"));
+                if (decl === undefined) return Err(new KarolError(";; WIP ;; Couldn't find call decl", stmt.position));
                 let res = yield* this.executeStmts(decl.body);
                 if (!res.isOk()) return res;
             }
         } else if (is(TruthStmt, stmt)) {
-            if (!this.insideCond) return Err(new Error(";; WIP ;; cant run wahr/falsch inside cond"));
+            if (!this.insideCond) return Err(new KarolError(";; WIP ;; cant run wahr/falsch inside cond", stmt.position));
             this.state = stmt.value;
-        } else return Err(new Error(";; WIP ;; Karol ran into an unknown error"));
+        } else return Err(new KarolError(";; WIP ;; Karol ran into an unknown error", stmt.position));
 
         return Ok(null);
     }
 
-    private *executeCond(cond: CondStmt): Generator<void, Result<boolean>, undefined> {
+    private *executeCond(cond: CondStmt): Generator<void, RuntimeResult<boolean>, undefined> {
         let truthy = false;
 
         let callback = conditions.get(cond.name.toLowerCase());
         if (callback !== undefined) {
             let res = this.executeInternalCallback(callback, cond.parameter);
-            if (!res.isOk()) return res;
+            if (!res.isOk()) return Err(new KarolError(res.unwrapErr().message, cond.position));
             truthy = res.unwrap();
         } else {
             let decl = this.code.find(x => is(CondDecl, x) && x.name == cond.name);
-            if (decl === undefined) return Err(new Error(";; WIP ;; Couldn't find cond decl"));
+            if (decl === undefined) return Err(new KarolError(";; WIP ;; Couldn't find cond decl", cond.position));
 
             this.insideCond = true;
             this.state = false;

@@ -1,9 +1,10 @@
 import { Lexer } from "./lexer";
 import { Span, TokenType as TK } from "./tokens";
-import { Result, assert, copy, is } from "./util";
+import { KarolError, Result, assert, copy, is } from "./util";
 import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, InftyLoopStmt, IterLoopStmt, ProgDecl, Stmt, TruthStmt } from "./ast"
 
 const Err = Result.Err, Ok = Result.Ok;
+type ParseResult<T> = Result<T, KarolError>;
 
 // TODO: method keyword
 // TODO: builtin functions arent allowed to be redeclared and colors are also not working i think
@@ -40,7 +41,7 @@ export class Parser extends Lexer {
 	// TODO: Libraries
 
 	// <file> ::= {<decl>} {<stmt> | <progDecl>}
-	public parse(): Result<Decl[], Error> {
+	public parse(): ParseResult<Decl[]> {
 		let result: Decl[] = [];
 
 		this.nextToken();
@@ -73,7 +74,7 @@ export class Parser extends Lexer {
 				if (!decl.isOk()) return Err(decl.unwrapErr());
 				result.push(decl.unwrap());
 				return Ok(result);
-			} else if (this.at(TK.BEDINGUNG, TK.ANWEISUNG)) return Err(new Error(";; WIP ;; Condition or Function Decleration after Stmts"));
+			} else if (this.at(TK.BEDINGUNG, TK.ANWEISUNG)) return Err(new KarolError(";; WIP ;; Condition or Function Decleration after Stmts", this.location()));
 
 			let stmt = this.parseStmt();
 			if(!stmt.isOk()) return Err(stmt.unwrapErr());
@@ -86,22 +87,22 @@ export class Parser extends Lexer {
 	}
 
 	// <decl> :: <funcDecl> | <condDecl> | <progDecl>
-	private parseDecl(): Result<Decl> {
+	private parseDecl(): ParseResult<Decl> {
 		if (this.at(TK.BEDINGUNG)) return this.parseCondDecl();
 		else if (this.at(TK.ANWEISUNG)) return this.parseFuncDecl();
 		else if (this.at(TK.PROGRAMM)) return this.parseProgDecl();
 
-		return Err(new Error(";; WIP ;; Couldn't parse declaration"));
+		return Err(new KarolError(";; WIP ;; Couldn't parse declaration", this.location()));
 	}
 
 	// <condDecl> ::= bedingung <identifier> <body> (endebedingung | *bedingung)
-	private parseCondDecl(): Result<CondDecl> {
+	private parseCondDecl(): ParseResult<CondDecl> {
 		let loc = this.location();
 
 		assert(this.consume(TK.BEDINGUNG), "parseCondDecl() was called without `bedingung`");
 
 		let name = this.currToken.value;
-		if (!this.consume(TK.IDENTIFIER)) return Err(new Error(";; WIP ;; Bedingung not followed by identifier"));
+		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError(";; WIP ;; Bedingung not followed by identifier", this.location()));
 
 		let body = this.parseBody(TK.ENDE_BEDINGUNG);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -111,13 +112,13 @@ export class Parser extends Lexer {
 	}
 
 	// <funcDecl> ::= anweisung <identifier> <body> (endeanweisung | *anweisung)
-	private parseFuncDecl(): Result<FuncDecl> {
+	private parseFuncDecl(): ParseResult<FuncDecl> {
 		let loc = this.location();
 
 		assert(this.consume(TK.ANWEISUNG), "parseFuncDecl() was called without `anweisung`");
 
 		let name = this.currToken.value;
-		if (!this.consume(TK.IDENTIFIER)) return Err(new Error(";; WIP ;; Anweisung not followed by identifier"));
+		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError(";; WIP ;; Anweisung not followed by identifier", this.location()));
 
 		let body = this.parseBody(TK.ENDE_ANWEISUNG);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -127,7 +128,7 @@ export class Parser extends Lexer {
 	}
 
 	// <progDecl> ::= programm <body> (endeprogramm | *programm)
-	private parseProgDecl(): Result<ProgDecl> {
+	private parseProgDecl(): ParseResult<ProgDecl> {
 		let loc = this.location();
 
 		assert(this.consume(TK.PROGRAMM), "parseProgDecl() was called without `programm`");
@@ -140,13 +141,13 @@ export class Parser extends Lexer {
 	}
 
 	// <stmt> ::=  <condLoopStmt> | <iterLoopStmt> | <inftyLoopStmt> | <ifStmt> | <callStmt>
-	private parseStmt(): Result<Stmt> {
+	private parseStmt(): ParseResult<Stmt> {
 		if (this.at(TK.WIEDERHOLE)) return this.parseLoop();
 		else if (this.at(TK.WENN)) return this.parseIf();
 		else return this.parseCall();
 	}
 
-	private parseLoop(): Result<CondLoopStmt | InftyLoopStmt | IterLoopStmt> {
+	private parseLoop(): ParseResult<CondLoopStmt | InftyLoopStmt | IterLoopStmt> {
 		let loc = this.location()
 
 		assert(this.consume(TK.WIEDERHOLE), "parseLoop() was called without `wiederhole`");
@@ -155,11 +156,11 @@ export class Parser extends Lexer {
 		else if (this.at(TK.IMMER)) return this.parseInftyLoop(loc);
 		else if (this.at(TK.INT_LITERAL)) return this.parseIterLoop(loc);
 
-		return Err(new Error(";; TODO ;; Unknown Token after wiederhole"));
+		return Err(new KarolError(";; TODO ;; Unknown Token after wiederhole", this.location()));
 	}
 
 	// <condLoopStmt> ::= wiederhole solange <cond> <body> (endewiederhole | *wiederhole)
-	private parseCondLoop(loc: Span): Result<CondLoopStmt> {
+	private parseCondLoop(loc: Span): ParseResult<CondLoopStmt> {
 		assert(this.consume(TK.SOLANGE), "parseCondLoop() was called without `solange`");
 
 		let cond = this.parseCond();
@@ -173,7 +174,7 @@ export class Parser extends Lexer {
 	}
 
 	// <inftyLoopStmt> ::= wiederhole immer <body> (endewiederhole | *wiederhole)
-	private parseInftyLoop(loc: Span): Result<InftyLoopStmt> {
+	private parseInftyLoop(loc: Span): ParseResult<InftyLoopStmt> {
 		assert(this.consume(TK.IMMER), "parseInftyLoop() was called without `immer`");
 
 		let body = this.parseBody(TK.ENDE_WIEDERHOLE);
@@ -184,13 +185,13 @@ export class Parser extends Lexer {
 	}
 
 	// <iterLoopStmt> ::= wiederhole <number> mal <body> (endewiederhole | *wiederhole)
-	private parseIterLoop(loc: Span): Result<IterLoopStmt> {
+	private parseIterLoop(loc: Span): ParseResult<IterLoopStmt> {
 		assert(this.at(TK.INT_LITERAL), "parseIterLoop() was called without int literal");
 
 		let number = parseInt(this.currToken.value!);
 		this.nextToken();
 
-		if (!this.consume(TK.MAL)) return Err(new Error(";; WIP ;; Expected mal after wiederhole"));
+		if (!this.consume(TK.MAL)) return Err(new KarolError(";; WIP ;; Expected mal after wiederhole", this.location()));
 
 		let body = this.parseBody(TK.ENDE_WIEDERHOLE);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -200,7 +201,7 @@ export class Parser extends Lexer {
 	}
 
 	// <ifStmt> ::= wenn <cond> dann <body> [sonst <body>] endewenn
-	private parseIf(): Result<IfStmt> {
+	private parseIf(): ParseResult<IfStmt> {
 		let loc = this.location();
 
 		assert(this.consume(TK.WENN), "parseIf() was called without `wenn`");
@@ -208,7 +209,7 @@ export class Parser extends Lexer {
 		let cond = this.parseCond();
 		if (!cond.isOk()) return Err(cond.unwrapErr());
 
-		if (!this.consume(TK.DANN)) return Err(new Error(";; WIP ;; expected dann after condition"));
+		if (!this.consume(TK.DANN)) return Err(new KarolError(";; WIP ;; expected dann after condition", this.location()));
 
 		let body = this.parseBody(TK.ENDE_WENN, TK.SONST);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -226,7 +227,7 @@ export class Parser extends Lexer {
 	}
 
 	// <callStmt> ::= <identifier> [<params>]
-	private parseCall(): Result<CallStmt | TruthStmt> {
+	private parseCall(): ParseResult<CallStmt | TruthStmt> {
 		let loc = this.location();
 
 		let name = this.currToken.value;
@@ -235,7 +236,7 @@ export class Parser extends Lexer {
 
 			this.consume(TK.WAHR, TK.FALSCH);
 			return Ok(stmt);
-		} else if (!this.consume(TK.IDENTIFIER)) return Err(new Error(";; WIP ;; Couldn't find Identifier Token in call"));
+		} else if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError(";; WIP ;; Couldn't find Identifier Token in call", this.location()));
 
 		let value : string | number | null = null;
 		if (this.at(TK.LPREN)) {
@@ -248,13 +249,13 @@ export class Parser extends Lexer {
 	}
 
 	// <cond> ::= [nicht] <identifier> [<params>]
-	private parseCond(): Result<CondStmt> {
+	private parseCond(): ParseResult<CondStmt> {
 		let loc = this.location();
 
 		let not = this.consume(TK.NICHT);
 
 		let name = this.currToken.value;
-		if (!this.consume(TK.IDENTIFIER)) return Err(new Error(";; WIP ;; Couldn't find Indentifier Token in condition"));
+		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError(";; WIP ;; Couldn't find Indentifier Token in condition", this.location()));
 
 		let value : string | number | null = null;
 		if (this.at(TK.LPREN)) {
@@ -265,27 +266,27 @@ export class Parser extends Lexer {
 
 		return Ok(new CondStmt(Span.concat(loc, this.location()), name!, not, value));
 	}
-	
+
 	// <params> ::= ([<identifier> | <number>])
-	private parseParams(): Result<string | number> {
+	private parseParams(): ParseResult<string | number> {
 		assert(this.consume(TK.LPREN), "parseParams() was called without `(`")
 
 		let value = this.at(TK.INT_LITERAL) ? parseInt(this.currToken.value!) : this.currToken.value;
-		if (!this.consume(TK.INT_LITERAL, TK.IDENTIFIER) || value === null) return Err(new Error(";; WIP ;; Didnt expect ... after ("));
+		if (!this.consume(TK.INT_LITERAL, TK.IDENTIFIER) || value === null) return Err(new KarolError(";; WIP ;; Didnt expect ... after (", this.location()));
 
-		if (!this.consume(TK.RPREN)) return Err(new Error(";; WIP ;; Expected ) after ("));
-		
+		if (!this.consume(TK.RPREN)) return Err(new KarolError(";; WIP ;; Expected ) after (", this.location()));
+
 		return Ok(value);
 	}
 
 
 
 	// <body> ::= {<stmt>}
-	private parseBody(...last: TK[]): Result<Stmt[]> {
+	private parseBody(...last: TK[]): ParseResult<Stmt[]> {
 		let results: Stmt[] = [];
 
 		while(!this.at(...last)) {
-			if (this.at(TK.EOF)) return Err(new Error(";; WIP ;; Reached EOF in body"));
+			if (this.at(TK.EOF)) return Err(new KarolError(";; WIP ;; Reached EOF in body", this.location()));
 
 			let stmt = this.parseStmt();
 			if (!stmt.isOk()) return Err(stmt.unwrapErr());

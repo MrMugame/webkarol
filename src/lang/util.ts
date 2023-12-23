@@ -1,3 +1,5 @@
+import { Span } from "./tokens";
+
 class Result<T, E extends Error = Error> {
     private constructor(
         private ok: boolean,
@@ -20,7 +22,7 @@ class Result<T, E extends Error = Error> {
     public isOk = (): boolean => this.ok;
 }
 
-const flatten = <T>(result: Result<Result<T>>): Result<T> => {
+const flatten = <T, E extends Error>(result: Result<Result<T, E>, E>): Result<T, E> => {
     if (result.isOk()) return result.unwrap();
     else return Result.Err(result.unwrapErr());
 }
@@ -39,4 +41,18 @@ const assert = (condition: boolean, msg: string): void => {
     throw new Error(msg);
 }
 
-export { Result, copy, is, assert, flatten }
+class KarolError extends Error {
+    private location: Span;
+
+    constructor(message: string, location: Span) {
+        super(message);
+        this.name = "KarolError";
+        this.location = location;
+    }
+
+    toString(): string {
+        return `${this.message} (in Zeile ${this.location.start.line} und Spalte ${this.location.start.column})`
+    }
+}
+
+export { Result, KarolError, copy, is, assert, flatten }
