@@ -41,9 +41,10 @@ export const color = {
 }
 
 /// The editor theme styles for One Dark.
-export const oneDarkTheme = EditorView.theme({
+export const _karolTheme = EditorView.theme({
 	"&": {
 		color: ivory,
+		height: "100%",
 		backgroundColor: background,
 		//"font-family": "SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace !important"
 	},
@@ -52,9 +53,7 @@ export const oneDarkTheme = EditorView.theme({
 		caretColor: cursor
 	},
 
-	".cm-editor": {
-		height: "100%"
-	},
+	".cm-scroller": {overflow: "auto"},
 
 	".cm-cursor, .cm-dropCursor": { borderLeftColor: cursor },
 	"&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection": { backgroundColor: selection },
@@ -115,7 +114,7 @@ export const oneDarkTheme = EditorView.theme({
 }, { dark: true })
 
 /// The highlighting style for code in the One Dark theme.
-export const oneDarkHighlightStyle = HighlightStyle.define([
+export const karolHighlightStyle = HighlightStyle.define([
 	{
 		tag: t.keyword,
 		color: violet
@@ -125,7 +124,7 @@ export const oneDarkHighlightStyle = HighlightStyle.define([
 		color: coral
 	},
 	{
-		tag: [t.function(t.variableName), t.labelName],
+		tag: [t.function(t.variableName), t.labelName, t.number],
 		color: malibu
 	},
 	{
@@ -137,7 +136,7 @@ export const oneDarkHighlightStyle = HighlightStyle.define([
 		color: ivory
 	},
 	{
-		tag: [t.typeName, t.className, t.number, t.changed, t.annotation, t.modifier, t.self, t.namespace],
+		tag: [t.typeName, t.className, t.changed, t.annotation, t.modifier, t.self, t.namespace],
 		color: chalky
 	},
 	{
@@ -184,6 +183,5 @@ export const oneDarkHighlightStyle = HighlightStyle.define([
 	},
 ])
 
-/// Extension to enable the One Dark theme (both the editor theme and
-/// the highlight style).
-export const oneDark: Extension = [oneDarkTheme, syntaxHighlighting(oneDarkHighlightStyle)]
+// syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
+export const karolTheme: Extension = [_karolTheme, syntaxHighlighting(karolHighlightStyle)];

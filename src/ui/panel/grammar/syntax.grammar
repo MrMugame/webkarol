@@ -1,4 +1,5 @@
-@top Porgram { Decl* }
+// For highlighting, we really dont care about any order
+@top Porgram { (Decl | Stmt)* }
 
 @skip {} {
 	Comment { "{" (commentContent)* commentEnd }
@@ -34,7 +35,7 @@ Body { Stmt* }
 // <stmt> ::=  <condLoopStmt> | <iterLoopStmt> | <inftyLoopStmt> | <ifStmt> | <callStmt>
 Stmt {
 	CallStmt |
-	CondLoopStmt | 
+	CondLoopStmt |
 	IterLoopStmt |
 	InftyLoopStmt |
 	IfStmt |
@@ -79,21 +80,6 @@ VariableName { identifier }
 FunctionName { identifier }
 Color { Rot | Gruen | Blau | Gelb | Schwarz }
 
-@tokens {
-	// TODO: ";"
-	spaces { @whitespace+ }
-
-	// TODO: Not only ascii letters
-	identifier { (@asciiLetter | "ü" | "ä" | "ö" | "*")+ }
-
-	Number { @digit+ }
-
-	@precedence { identifier, spaces }
-
-	"(" ")"
-
-}
-
 @external specialize { identifier } keywords from "./tokens" {
 	Wiederhole,
 	Mal,
@@ -123,7 +109,19 @@ Color { Rot | Gruen | Blau | Gelb | Schwarz }
 	Schwarz
 }
 
+@tokens {
+	// TODO: ";"
+	spaces { (@whitespace | ";")+ }
 
-// ;; Predeclared
-// <number>
-// <identifier>
+	// TODO: Properly handle "*"
+	identifier { "*"? letter (@digit | letter)+ }
+
+	letter { @asciiLetter | "ü" | "ä" | "ö" | "_" }
+
+	Number { @digit+ }
+
+	@precedence { identifier, spaces }
+
+	"(" ")"
+
+}

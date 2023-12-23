@@ -1,22 +1,33 @@
 // @ts-ignore
 import { parser } from "./syntax.grammar"
-import { foldNodeProp, foldInside, LRLanguage, LanguageSupport } from "@codemirror/language"
+import { foldNodeProp, LRLanguage, foldInside, LanguageSupport, indentNodeProp, continuedIndent, TreeIndentContext } from "@codemirror/language"
 import { styleTags, tags as t } from "@lezer/highlight"
+import { SyntaxNode } from "@lezer/common"
 
-// function foldCompletly(node: any) {
-// 	let first = node.firstChild, last = node.lastChild;
-// 	return { from: first.from, to: last.to };
-// }
+const closingKeywordIndent = (word: string): (context: TreeIndentContext) => number | null => {
+	return continuedIndent( { except: new RegExp(`^\\s*((ende|\\*)${word})`, "i")} );
+}
 
 export const KarolLanguage = LRLanguage.define({
 	parser: parser.configure({
 		props: [
-			//  indentNodeProp.add({
-			//    //Application: delimitedIndent({closing: ")", align: false})
-			//  }),
-			//  foldNodeProp.add({
-			//   Body: foldCompletly,
-			//  }),
+			indentNodeProp.add({
+				FuncDecl: closingKeywordIndent("Anweisung"),
+				ProgDecl: closingKeywordIndent("Programm"),
+				CondDecl: closingKeywordIndent("Bedingung"),
+
+				"CondLoopStmt IterLoopStmt InftyLoopStmt": closingKeywordIndent("Wiederhole"),
+				IfStmt: closingKeywordIndent("Wenn|sonst"),
+			}),
+			foldNodeProp.add({
+				"CondDecl FuncDecl": (node: SyntaxNode): { from: number, to: number } | null => {
+					let first = node.firstChild?.nextSibling, last = node.lastChild;
+
+					if (!first || !last) return null;
+					return { from: first.to, to: last.from };
+				},
+				ProgDecl: foldInside,
+			}),
 			styleTags({
 				"Wiederhole Mal Solange EndeWiederhole Wenn Dann Sonst Nicht Immer EndeWenn Anweisung EndeAnweisung Bedingung EndeBedingung Programm EndeProgramm Wahr Falsch": t.keyword,
 				"Rot Gruen Schwarz Blau": t.typeName,
@@ -29,8 +40,10 @@ export const KarolLanguage = LRLanguage.define({
 		]
 	}),
 	languageData: {
-		commentTokens: { open: "{", close: "}" }
+		closeBrackets: { brackets: ["{", "("]},
+		commentTokens: { open: "{", close: "}" },
+		indentOnInput: /^\s*((\*|ende).*|sonst)$/i
 	}
 })
 
-export const KarolPackage = () => new LanguageSupport(KarolLanguage);
+export const KarolPackage = (): LanguageSupport => new LanguageSupport(KarolLanguage);
