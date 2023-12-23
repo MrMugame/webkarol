@@ -65,10 +65,11 @@ class BirdeyeView implements View {
     }
 
     private drawBackground() {
-        if (this.world === null) return; // TODO: Maybe send error message (+ Foreground)
+        if (this.world === null) return; // TODO: Maybe send error message (+ foreground)
 
         let ctx = this.background.getContext("2d");
-        if (ctx === null) return; // TODO: Maybe try regenerating the canvas here? (+Foreground)
+        if (ctx === null) return; // TODO: Maybe try regenerating the canvas here? (+ foreground)
+        ctx.save();
 
         ctx.clearRect(0, 0, this.background.width, this.background.height);
         this.initCanvas(ctx);
@@ -88,6 +89,8 @@ class BirdeyeView implements View {
             ctx.stroke();
             ctx.closePath();
         }
+
+        ctx.restore();
     }
 
     private drawForeground() {
@@ -95,6 +98,7 @@ class BirdeyeView implements View {
 
         let ctx = this.foreground.getContext("2d");
         if (ctx === null) return;
+        ctx.save();
 
         ctx.clearRect(0, 0, this.foreground.width, this.foreground.height);
         this.initCanvas(ctx);
@@ -153,6 +157,8 @@ class BirdeyeView implements View {
         ctx.lineTo(0,           -BLOCKSIZE/2+m);
         ctx.fill();
         ctx.closePath();
+
+        ctx.restore();
     }
 }
 
