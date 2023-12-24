@@ -1,8 +1,5 @@
 import { Span } from "./tokens";
 
-// TODO: Maybe make node at toplevel
-
-
 /// Declarations
 
 abstract class Decl {

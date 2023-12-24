@@ -7,7 +7,7 @@ const Err = Result.Err, Ok = Result.Ok;
 type ParseResult<T> = Result<T, KarolError>;
 
 // TODO: method keyword
-// TODO: builtin functions arent allowed to be redeclared and colors are also not working i think
+// TODO: builtin functions arent allowed to be redeclared
 
 // This language is probably easy enough to be implemented without a parser,
 // by just reading and intrepreting the text directly, but ... yeah ... we
@@ -156,7 +156,7 @@ export class Parser extends Lexer {
 		else if (this.at(TK.IMMER)) return this.parseInftyLoop(loc);
 		else if (this.at(TK.INT_LITERAL)) return this.parseIterLoop(loc);
 
-		return Err(new KarolError(";; TODO ;; Unknown Token after wiederhole", this.location()));
+		return Err(new KarolError(";; WIP ;; Unknown Token after wiederhole", this.location()));
 	}
 
 	// <condLoopStmt> ::= wiederhole solange <cond> <body> (endewiederhole | *wiederhole)

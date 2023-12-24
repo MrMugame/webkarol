@@ -11,7 +11,6 @@ export class Lexer {
 	private position: Span.Position
 	public currToken: Token
 
-	// TODO: Fix double index
 	constructor(input: string) {
 		this.input = input;
 		this.position = { line: 1, column: -1, idx: -1 };
@@ -57,8 +56,6 @@ export class Lexer {
 		switch (this.currChar) {
 			case "{": {
 				let prevIndex = this.position.idx;
-
-				// TODO: Make this an actually Token for syntax highlighting
 
 				// Cast because Typescript is bullshit LOL
 				while ((this.currChar as string) !== "}") {

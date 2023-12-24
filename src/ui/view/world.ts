@@ -258,7 +258,7 @@ class World {
 
     isMark(color: Color | null = null): boolean {
         let cell = this.world[this.player.x][this.player.y];
-        
+
         if (cell?.kind === CellType.Bricks) {
             if (color === null) {
                 return cell.mark !== null;
