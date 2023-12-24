@@ -137,8 +137,12 @@ class Controller {
             } else this.loop();
         }, this.world.getSpeed());
     }
+
+    getEditor = () => this.editor;
 }
 
+export let controller: Controller;
+
 window.onload = () => {
-    new Controller();
+    controller = new Controller();
 }

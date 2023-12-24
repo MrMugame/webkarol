@@ -1,0 +1,13 @@
+{
+    `Kreis` Beispiel für Webkarol
+    Dieses Programm läst Karol endlos im Kreis laufen
+}
+
+Programm
+    wiederhole immer
+        wiederhole solange NichtIstWand
+            Schritt
+        endeWiederhole
+        LinksDrehen
+    endeWiederhole
+endeProgramm

@@ -58,4 +58,12 @@ export class Editor {
     getText(): string {
         return this.view.state.doc.toString();
     }
+
+    setText(text: string) {
+        this.view.setState(EditorState.create({
+            doc: text,
+            extensions: extensions
+        }));
+        localStorage.setItem("editor-content", text);
+    }
 }

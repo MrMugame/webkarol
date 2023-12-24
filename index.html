@@ -13,15 +13,19 @@
 
       <!-- File dropdown -->
       <div class="dropdown">
-        <button class="dropdown-button" onclick="this.parentElement.classList.toggle('active')">Datei</button>
+        <button class="dropdown-button">Datei</button>
         <div class="dropdown-content">
-          <button>Neu</button>
-          <button id="btn-open">Öffnen</button>
-          <button>Speichern</button>
-          <button>Speichern unter...</button>
+          <button id="btn-bar-new">Neu</button>
+          <button id="btn-bar-open">Öffnen</button>
+          <!-- <button>Speichern</button> -->
+          <button id="btn-bar-saveas">Herunterladen</button>
         </div>
       </div>
 
+      <div class="dropdown">
+        <button class="dropdown-button">Beispiele</button>
+        <div class="dropdown-content" id="dropdown-examples"></div>
+      </div>
     </div>
 
     <!-- CONTENT -->
@@ -68,6 +72,17 @@
         </div>
       </div>
     </div>
+
+    <dialog id="modal-new">
+      <div class="bar">
+        <h1>Bestätigung</h1>
+      </div>
+      <p>Das aktelle Programm wurde geändert.<br>Ohne speichern gehen diese Änderungen verloren.<br><br>Trotzdem ein neues Programm anlegen?</p>
+      <div class="prompt">
+        <button class="confirm">Ja</button>
+        <button class="deny">Nein</button>
+      </div>
+    </dialog>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
