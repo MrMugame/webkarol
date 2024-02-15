@@ -22,9 +22,19 @@
         </div>
       </div>
 
+      <!-- Examples dropdown -->
       <div class="dropdown">
         <button class="dropdown-button">Beispiele</button>
         <div class="dropdown-content" id="dropdown-examples"></div>
+      </div>
+
+      <!-- Help dropdown -->
+      <div class="dropdown">
+        <button class="dropdown-button">Hilfe</button>
+        <div class="dropdown-content">
+          <a href="https://github.com/MrMugame/webkarol">Quelle (Github)</a>
+          <button id="btn-bar-help">Hilfe</button>
+        </div>
       </div>
     </div>
 
@@ -39,29 +49,29 @@
         <div id="view"></div>
         <div id="bottom-panel">
           <div id="bottom-panel-bar">
-            <button id="btn-start">
+            <button id="btn-start" title="Starten">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.01547 7.32925C7.01547 6.69924 7.67837 6.30034 8.22055 6.60356L16.5629 11.2749C16.6905 11.3463 16.797 11.4513 16.8712 11.579C16.9454 11.7066 16.9845 11.8522 16.9845 12.0006C16.9845 12.1489 16.9454 12.2945 16.8712 12.4221C16.797 12.5498 16.6905 12.6548 16.5629 12.7263L8.22055 17.3976C8.0967 17.4669 7.95725 17.5022 7.81595 17.4999C7.67464 17.4976 7.53634 17.4579 7.4147 17.3847C7.29306 17.3114 7.19227 17.2072 7.12226 17.0822C7.05225 16.9572 7.01545 16.8158 7.01547 16.6719V7.32925Z"/>
               </svg>
             </button>
-            <button id="btn-fastforward">
+            <button id="btn-fastforward" title="Schnelldurchlauf">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M1.86955 7.69505C1.86955 6.77893 2.85883 6.20424 3.65407 6.65912L11.1908 10.9651C11.3735 11.0694 11.5254 11.2201 11.631 11.4021C11.7367 11.584 11.7923 11.7906 11.7923 12.001C11.7923 12.2114 11.7367 12.418 11.631 12.6C11.5254 12.7819 11.3735 12.9327 11.1908 13.037L3.65407 17.3429C3.47265 17.4466 3.26718 17.5007 3.05825 17.5C2.84931 17.4993 2.64423 17.4437 2.46354 17.3388C2.28284 17.2339 2.13286 17.0834 2.02862 16.9023C1.92438 16.7212 1.86952 16.5159 1.86955 16.307V7.69505ZM12.2077 7.69505C12.2077 6.77893 13.197 6.20424 13.9922 6.65912L21.529 10.9651C21.7117 11.0694 21.8636 11.2201 21.9692 11.4021C22.0748 11.584 22.1304 11.7906 22.1304 12.001C22.1304 12.2114 22.0748 12.418 21.9692 12.6C21.8636 12.7819 21.7117 12.9327 21.529 13.037L13.9922 17.3429C13.8108 17.4466 13.6053 17.5007 13.3964 17.5C13.1875 17.4993 12.9824 17.4437 12.8017 17.3388C12.621 17.2339 12.471 17.0834 12.3668 16.9023C12.2625 16.7212 12.2077 16.5159 12.2077 16.307V7.69505Z"/>
               </svg>
             </button>
-            <button id="btn-singlestep">
+            <button id="btn-singlestep" title="Einzelschritt">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M18.2857 6.5V17.5M5.7143 16.2544V7.74667C5.7143 6.84153 6.69173 6.27372 7.47744 6.72314L14.9239 10.9775C15.1044 11.0806 15.2544 11.2295 15.3588 11.4093C15.4632 11.589 15.5182 11.7931 15.5182 12.001C15.5182 12.2088 15.4632 12.4131 15.3588 12.5928C15.2544 12.7725 15.1044 12.9215 14.9239 13.0246L7.47744 17.2789C7.29811 17.3813 7.09502 17.4348 6.8885 17.4341C6.68198 17.4334 6.47928 17.3783 6.30072 17.2745C6.12216 17.1708 5.974 17.0219 5.87107 16.8429C5.76816 16.6638 5.71409 16.4609 5.7143 16.2544Z"/>
               </svg>
             </button>
 
-            <button id="btn-pause">
+            <button id="btn-pause" title="Pausieren">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.0556 6.5V17.5M8.94444 6.5V17.5"/>
               </svg>
             </button>
 
-            <button id="btn-stop">
+            <button id="btn-stop" title="Stoppen">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.5 8.33333C6.5 7.8471 6.69315 7.38079 7.03697 7.03697C7.38079 6.69315 7.8471 6.5 8.33333 6.5H15.6667C16.1529 6.5 16.6192 6.69315 16.963 7.03697C17.3068 7.38079 17.5 7.8471 17.5 8.33333V15.6667C17.5 16.1529 17.3068 16.6192 16.963 16.963C16.6192 17.3068 16.1529 17.5 15.6667 17.5H8.33333C7.8471 17.5 7.38079 17.3068 7.03697 16.963C6.69315 16.6192 6.5 16.1529 6.5 15.6667V8.33333Z"/>
               </svg>
@@ -81,6 +91,16 @@
       <div class="prompt">
         <button class="confirm">Ja</button>
         <button class="deny">Nein</button>
+      </div>
+    </dialog>
+
+    <dialog id="modal-help">
+      <div class="bar">
+        <h1>Hilfe</h1>
+      </div>
+      <div class="content"></div>
+      <div class="prompt">
+        <button class="confirm">Ok</button>
       </div>
     </dialog>
 

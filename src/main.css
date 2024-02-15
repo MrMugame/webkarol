@@ -12,6 +12,10 @@
     box-sizing: border-box;
 }
 
+a {
+    font-family: sans-serif;
+}
+
 body {
     position: relative;
     background-color: var(--color-background);
@@ -61,7 +65,7 @@ body {
     padding: 1px;
 }
 
-.dropdown-content button{
+.dropdown-content button, .dropdown-content a {
     display: block;
     color: white;
     padding: 0.4rem 0.4rem;
@@ -71,9 +75,10 @@ body {
     background-color: transparent;
     width: 100%;
     text-align: left;
+    cursor: default;
 }
 
-.dropdown-content button:hover {
+.dropdown-content button:hover, .dropdown-content a:hover {
     background-color: var(--color-blue1);
 }
 
@@ -198,7 +203,9 @@ body {
 }
 
 
-dialog {
+dialog[open] {
+    display: flex;
+    flex-direction: column;
     padding: 0;
     border: 1px solid var(--color-grey1);
     background-color: var(--color-background);
@@ -211,7 +218,7 @@ dialog p {
     font-size: 0.9rem;
 }
 
-dialog h1 {
+dialog .bar h1 {
     font-family: sans-serif;
     font-weight: normal;
     font-size: 0.9rem;
@@ -226,7 +233,7 @@ dialog .bar {
     padding: 0 0.5rem;
     width: 100%;
     height: 2rem;
-    background-color: pink;
+    min-height: 2rem;
     border-bottom: 1px solid var(--color-grey1);
     background-color: var(--color-grey2);
 }
@@ -255,6 +262,31 @@ dialog .prompt button:hover {
 dialog::backdrop {
     z-index: 99;
     background-color: rgba(0, 0, 0, 50%);
+}
+
+#modal-help {
+    width: 60%;
+    height: 60%;
+}
+
+#modal-help .content {
+    padding: 1rem;
+    overflow: scroll;
+    font-family: sans-serif;
+    color: white;
+}
+
+#modal-help .content h2, h3, h4 {
+    margin: 0;
+}
+
+#modal-help .content p {
+    text-align: justify;
+}
+
+#modal-help a {
+    text-decoration: none;
+    color: #3b72ff;
 }
 
 /* #bottom-panel-bar button:active {

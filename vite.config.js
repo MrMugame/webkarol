@@ -1,5 +1,6 @@
-import {lezer} from "@lezer/generator/rollup"
+import { lezer } from "@lezer/generator/rollup"
+import { plugin, Mode } from "vite-plugin-markdown"
 
 export default {
-    plugins: [lezer()]
+    plugins: [lezer(), plugin({mode: Mode.HTML})]
 }
