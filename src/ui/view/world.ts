@@ -325,7 +325,8 @@ class World {
     }
 
     beep(): void {
-        assert(false, "TODO: Implement sound");
+        const beep = new Audio("/assets/beep.wav");
+        beep.play();
     }
 
     // TODO: Backpack

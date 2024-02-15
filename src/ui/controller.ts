@@ -28,9 +28,6 @@ class Controller {
         this.runner = null;
 
         this.terminal.clear();
-
-        // TODO: Move all the event handler out of the constructor into a seperate file
-        
     }
 
     private compile() {
@@ -69,6 +66,7 @@ class Controller {
 
     start() {
         if (this.running) return;
+        this.terminal.clear();
 
         if (this.runner === null) {
             // No runner exists. This means there is currently no program running
