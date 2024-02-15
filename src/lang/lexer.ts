@@ -1,6 +1,5 @@
 import { KEYWORDS, Span, Token, TokenType as TK } from "./tokens";
 import { copy } from "./util";
-// TODO: $lib alias in vite
 
 const NUMBER = /[0-9]/;
 const LETTER = /[[a-zA-ZäöüÄÖÜß*_]/;

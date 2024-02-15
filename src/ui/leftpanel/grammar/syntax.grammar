@@ -110,10 +110,8 @@ Color { Rot | Gruen | Blau | Gelb | Schwarz }
 }
 
 @tokens {
-	// TODO: ";"
 	spaces { (@whitespace | ";")+ }
 
-	// TODO: Properly handle "*"
 	identifier { "*"? letter (@digit | letter)* }
 
 	letter { @asciiLetter | "ü" | "ä" | "ö" | "Ü" | "Ä" | "Ö" | "_" }
@@ -123,5 +121,4 @@ Color { Rot | Gruen | Blau | Gelb | Schwarz }
 	@precedence { identifier, spaces }
 
 	"(" ")"
-
 }

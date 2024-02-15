@@ -6,7 +6,6 @@ import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, Inf
 const Err = Result.Err, Ok = Result.Ok;
 type ParseResult<T> = Result<T, KarolError>;
 
-// TODO: method keyword
 // TODO: builtin functions arent allowed to be redeclared
 
 // This language is probably easy enough to be implemented without a parser,
