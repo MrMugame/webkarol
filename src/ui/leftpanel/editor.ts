@@ -1,10 +1,9 @@
 import { keymap, drawSelection, dropCursor, lineNumbers, EditorView, highlightActiveLine, ViewUpdate, Decoration } from "@codemirror/view"
 import { Extension, EditorState, StateField, StateEffect } from "@codemirror/state"
-import { indentOnInput, foldGutter, foldKeymap, indentUnit } from "@codemirror/language"
+import { indentOnInput, foldGutter, indentUnit } from "@codemirror/language"
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands"
 import { searchKeymap, highlightSelectionMatches } from "@codemirror/search"
 import { closeBracketsKeymap, closeBrackets } from "@codemirror/autocomplete"
-import { lintKeymap } from "@codemirror/lint"
 import { karolTheme } from "./theme"
 import { KarolPackage } from "./grammar/karol"
 
@@ -66,8 +65,7 @@ const extensions: Extension = [
     ...defaultKeymap,
     ...searchKeymap,
     ...historyKeymap,
-    ...foldKeymap,
-    ...lintKeymap
+    // ...foldKeymap,
     ])
 ]
 

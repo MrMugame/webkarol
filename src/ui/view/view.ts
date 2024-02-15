@@ -1,4 +1,5 @@
 import { Color, World } from "./world";
+import "./keyboard.ts";
 
 const MARGIN = { x: 30, y: 30 };
 const BLOCKSIZE = 50;
@@ -10,6 +11,7 @@ const COLORS: Map<Color, ColorPair> = new Map([
     [Color.Red, { background: "#cd0000", stroke: "#ff0000" }],
     [Color.Blue, { background: "#0000cd", stroke: "#0000ff" }]
 ]);
+const GREY: ColorPair = { background: "#404040", stroke: "#808080" };
 
 interface View {
     redraw(): void;
@@ -24,5 +26,5 @@ interface View {
     setWorld(world: World): void;
 }
 
-export { MARGIN, BLOCKSIZE, COLORS }
+export { MARGIN, BLOCKSIZE, COLORS, GREY }
 export type { View }

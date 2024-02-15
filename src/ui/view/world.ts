@@ -129,7 +129,7 @@ class World {
     private cellIsEmpty(x: number, y: number): boolean {
         let cell = this.world[x][y];
 
-        return cell?.kind === CellType.Bricks && cell.bricks.length === 0
+        return (cell?.kind === CellType.Bricks && cell.bricks.length === 0) || cell === null;
     }
 
     // The methods on the world always just take one argument. This has the reason that with a count
@@ -148,6 +148,18 @@ class World {
 
         this.player.x = x;
         this.player.y = y;
+
+        this.view.redraw();
+        return Ok(null);
+    }
+
+    stepBack(): Result<null> {
+        this.rotateLeft();
+        this.rotateLeft();
+        let res = this.step();
+        this.rotateLeft();
+        this.rotateLeft();
+        if (!res.isOk()) return res;
 
         this.view.redraw();
         return Ok(null);
@@ -236,6 +248,24 @@ class World {
         }
 
         this.view.redraw();
+    }
+
+    placeCuboid(): Result<null> {
+        let [x, y] = this.cellInFront();
+
+        if (this.cellExists(x, y)) {
+            return Err(new Error(";; WIP ;; Karol cant place because of a wall"));
+        } else if (!this.cellIsEmpty(x, y)) {
+            return Err(new Error(";; WIP ;; Karol cell is not empty"));
+        }
+
+        let cell = this.world[x][y];
+        if (cell === null) {
+            this.world[x][y] = { kind: CellType.Cuboid };
+        }
+
+        this.view.redraw();
+        return Ok(null);
     }
 
     isWall(): boolean {

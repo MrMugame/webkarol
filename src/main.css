@@ -129,6 +129,11 @@ body {
     height: 100%;
 }
 
+#view:focus {
+    z-index: 2;
+    outline: 1px dotted #212121;
+}
+
 #view canvas {
     position: absolute;
 }
@@ -136,7 +141,6 @@ body {
 #editor {
     height: 100%;
 }
-
 
 #right-panel {
     display: flex;

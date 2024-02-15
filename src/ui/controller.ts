@@ -142,6 +142,10 @@ class Controller {
     }
 
     getEditor = () => this.editor;
+
+    isRunning = () => this.runner !== null;
+
+    getWorld = () => this.world;
 }
 
 export let controller: Controller;

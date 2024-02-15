@@ -1,4 +1,4 @@
-import { BLOCKSIZE, COLORS, MARGIN, View } from "./view";
+import { BLOCKSIZE, COLORS, GREY, MARGIN, View } from "./view";
 import { CellType, World } from "./world";
 
 
@@ -112,6 +112,7 @@ class BirdeyeView implements View {
 
                 let [x, y] = [i*BLOCKSIZE, k*BLOCKSIZE];
 
+                let [a, b, c, d] = [x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2];
                 if (cell.kind === CellType.Bricks) {
                     // TODO: Make color changable
 
@@ -120,15 +121,15 @@ class BirdeyeView implements View {
                         ctx.fillStyle = COLORS.get(cell.mark)!.stroke;
                         ctx.strokeStyle = "#000000";
 
-                        ctx.fillRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
-                        ctx.strokeRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
+                        ctx.fillRect(a, b, c, d);
+                        ctx.strokeRect(a, b, c, d);
                     } else if (cell.bricks.length > 0) {
                         let pair = COLORS.get(cell.bricks[cell.bricks.length - 1])!;
                         ctx.fillStyle = pair.background;
                         ctx.strokeStyle = pair.stroke;
 
-                        ctx.fillRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
-                        ctx.strokeRect(x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2);
+                        ctx.fillRect(a, b, c, d);
+                        ctx.strokeRect(a, b, c, d);
 
                         ctx.fillStyle = "#fff";
                         ctx.font = "30px sans-serif";
@@ -137,7 +138,11 @@ class BirdeyeView implements View {
                         ctx.fillText(cell.bricks.length.toString(), x + BLOCKSIZE/2, y + BLOCKSIZE/2);
                     }
                 } else if (cell.kind === CellType.Cuboid) {
-                    // TODO: Draw cuboid
+                    ctx.fillStyle = GREY.background;
+                    ctx.strokeStyle = GREY.stroke;
+
+                    ctx.fillRect(a, b, c, d);
+                    ctx.strokeRect(a, b, c, d);
                 }
             }
         }
@@ -151,10 +156,10 @@ class BirdeyeView implements View {
         ctx.rotate(direction*(Math.PI/2));
 
         ctx.beginPath();
-        ctx.moveTo(0,           -BLOCKSIZE/2+m);
+        ctx.moveTo(0,               -BLOCKSIZE/2+m);
         ctx.lineTo(-BLOCKSIZE/2+m/2, BLOCKSIZE/2-m);
-        ctx.lineTo( BLOCKSIZE/2-m/2,  BLOCKSIZE/2-m);
-        ctx.lineTo(0,           -BLOCKSIZE/2+m);
+        ctx.lineTo( BLOCKSIZE/2-m/2, BLOCKSIZE/2-m);
+        ctx.lineTo(0,               -BLOCKSIZE/2+m);
         ctx.fill();
         ctx.closePath();
 
