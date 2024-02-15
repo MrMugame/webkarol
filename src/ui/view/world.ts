@@ -137,9 +137,12 @@ class World {
     private cellIsNotJumpable(x: number, y: number): boolean {
         let cell = this.world[x][y];
         let playerCell = this.world[this.playerPosition.x][this.playerPosition.y];
-        let maxHeight = this.jumpable + (playerCell?.kind === CellType.Bricks ? playerCell.bricks.length : 0);
+        let delta = (playerCell?.kind === CellType.Bricks ? playerCell.bricks.length : 0);
+        let maxHeight = delta + this.jumpable;
+        let minHeight = delta - this.jumpable;
+        let height = cell?.kind === CellType.Bricks ? cell.bricks.length : 0;
 
-        return cell?.kind === CellType.Bricks && cell.bricks.length > maxHeight;
+        return height > maxHeight || height < minHeight;
     }
 
     // The methods on the world always just take one argument. This has the reason that with a count
