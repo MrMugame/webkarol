@@ -137,13 +137,14 @@ class Controller {
                 if (!res.value) return;
                 if (!res.value.isOk()) this.terminal.printError(res.value.unwrapErr());
                 else this.terminal.printInfo("Karol ist fertig");
+                this.running = false;
             } else this.loop();
         }, this.world.getSpeed());
     }
 
     getEditor = () => this.editor;
 
-    isRunning = () => this.runner !== null;
+    isRunning = () => this.running;
 
     getWorld = () => this.world;
 }

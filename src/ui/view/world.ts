@@ -64,6 +64,7 @@ class World {
     private world: Cell[][]; // x, y
     private player: PlayerPosition;
     private speed: "fast" | "slow";
+    private jumpable: number;
 
     private view: View;
 
@@ -74,6 +75,7 @@ class World {
         this.view.setWorld(this);
         this.world = new Array(this.size.x).fill(null).map(() => new Array(this.size.y).fill(null));
         this.player = { x: 0, y: 0, direction: Rotation.South };
+        this.jumpable = 1;
     }
 
     get cells(): Cell[][] {
@@ -132,6 +134,14 @@ class World {
         return (cell?.kind === CellType.Bricks && cell.bricks.length === 0) || cell === null;
     }
 
+    private cellIsNotJumpable(x: number, y: number): boolean {
+        let cell = this.world[x][y];
+        let playerCell = this.world[this.playerPosition.x][this.playerPosition.y];
+        let maxHeight = this.jumpable + (playerCell?.kind === CellType.Bricks ? playerCell.bricks.length : 0);
+
+        return cell?.kind === CellType.Bricks && cell.bricks.length > maxHeight;
+    }
+
     // The methods on the world always just take one argument. This has the reason that with a count
     // argument, we couldn't easily mimic the behaviour, that karol shows where he is gonna run into
     // the wall knowing that it wouldn't work on the first move.
@@ -144,7 +154,9 @@ class World {
             return Err(new Error(";; WIP ;; Karol cant walk into wall"));
         } else if (this.cellIsCuboid(x, y)) {
             return Err(new Error(";; WIP ;; Karol cant walk into cuboid"));
-        } // TODO: Handle case of cell being above certain level, where karol cant jump
+        } else if (this.cellIsNotJumpable(x, y)) {
+            return Err(new Error(";; WIP ;; Karol cant jump that high"));
+        }
 
         this.player.x = x;
         this.player.y = y;
