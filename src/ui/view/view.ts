@@ -1,5 +1,5 @@
 import { Color, World } from "./world";
-import "./keyboard.ts";
+import "./controls.ts";
 
 const MARGIN = { x: 30, y: 30 };
 const BLOCKSIZE = 50;

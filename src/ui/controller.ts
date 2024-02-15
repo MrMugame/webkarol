@@ -30,82 +30,7 @@ class Controller {
         this.terminal.clear();
 
         // TODO: Move all the event handler out of the constructor into a seperate file
-        document.querySelector("#btn-start")!.addEventListener("click", () => {
-            if (this.running) return;
-
-            if (this.runner === null) {
-                // No runner exists. This means there is currently no program running
-                // nor is there a compiled one waiting
-                this.compile();
-                if (this.runner === null) return;
-            } else if (this.runner.next().done === true) {
-                this.compile();
-            }
-
-            this.terminal.printInfo("Karol wurde gestartet");
-
-            this.running = true;
-            this.world.setSlow();
-
-            this.loop();
-        });
-
-        document.querySelector("#btn-pause")!.addEventListener("click", () => {
-            if (!this.running) return;
-            this.running = false;
-
-            this.terminal.printInfo("Karol wurde pausiert");
-        });
-
-        document.querySelector("#btn-fastforward")!.addEventListener("click", () => {
-            if (this.running) return;
-
-            if (this.runner === null) {
-                // No runner exists. This means there is currently no program running
-                // nor is there a compiled one waiting
-                this.compile();
-                if (this.runner === null) return;
-            } else if (this.runner.next().done === true) {
-                this.compile();
-            }
-
-            this.terminal.printInfo("Karol wurde gestartet");
-
-            this.running = true;
-            this.world.setFast();
-
-            this.loop();
-        });
-
-        document.querySelector("#btn-stop")!.addEventListener("click", () => {
-            this.running = false;
-
-            this.runner = null;
-
-            this.terminal.printInfo("Karol wurde gestopt");
-        });
-
-        document.querySelector("#btn-singlestep")!.addEventListener("click", () => {
-            if (this.running) return;
-
-            if (this.runner === null) {
-                // No runner exists. This means there is currently no program running
-                // nor is there a compiled one waiting
-                this.compile();
-                if (this.runner === null) return;
-                this.terminal.printInfo("Karol wurde gestartet");
-            }
-
-            if (this.runner !== null) {
-                let res = this.runner.next();
-
-                if (res.done) {
-                    if(!res.value) return;
-                    if (!res.value.isOk()) this.terminal.printError(res.value.unwrapErr());
-                    else this.terminal.printInfo("Karol ist fertig");
-                }
-            }
-        });
+        
     }
 
     private compile() {
@@ -140,6 +65,83 @@ class Controller {
                 this.running = false;
             } else this.loop();
         }, this.world.getSpeed());
+    }
+
+    start() {
+        if (this.running) return;
+
+        if (this.runner === null) {
+            // No runner exists. This means there is currently no program running
+            // nor is there a compiled one waiting
+            this.compile();
+            if (this.runner === null) return;
+        } else if (this.runner.next().done === true) {
+            this.compile();
+        }
+
+        this.terminal.printInfo("Karol wurde gestartet");
+
+        this.running = true;
+        this.world.setSlow();
+
+        this.loop();
+    }
+
+    pause() {
+        if (!this.running) return;
+        this.running = false;
+
+        this.terminal.printInfo("Karol wurde pausiert");
+    }
+
+    fastforward() {
+        if (this.running) return;
+
+        if (this.runner === null) {
+            // No runner exists. This means there is currently no program running
+            // nor is there a compiled one waiting
+            this.compile();
+            if (this.runner === null) return;
+        } else if (this.runner.next().done === true) {
+            this.compile();
+        }
+
+        this.terminal.printInfo("Karol wurde gestartet");
+
+        this.running = true;
+        this.world.setFast();
+
+        this.loop();
+    }
+
+    stop() {
+        this.running = false;
+
+        this.runner = null;
+
+        this.terminal.printInfo("Karol wurde gestopt");
+    }
+
+    singlestep() {
+        if (this.running) return;
+
+        if (this.runner === null) {
+            // No runner exists. This means there is currently no program running
+            // nor is there a compiled one waiting
+            this.compile();
+            if (this.runner === null) return;
+            this.terminal.printInfo("Karol wurde gestartet");
+        }
+
+        if (this.runner !== null) {
+            let res = this.runner.next();
+
+            if (res.done) {
+                if(!res.value) return;
+                if (!res.value.isOk()) this.terminal.printError(res.value.unwrapErr());
+                else this.terminal.printInfo("Karol ist fertig");
+            }
+        }
     }
 
     getEditor = () => this.editor;

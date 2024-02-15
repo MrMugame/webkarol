@@ -271,10 +271,22 @@ class World {
             return Err(new Error(";; WIP ;; Karol cell is not empty"));
         }
 
-        let cell = this.world[x][y];
-        if (cell === null) {
-            this.world[x][y] = { kind: CellType.Cuboid };
+        this.world[x][y] = { kind: CellType.Cuboid };
+
+        this.view.redraw();
+        return Ok(null);
+    }
+
+    removeCuboid(): Result<null> {
+        let [x, y] = this.cellInFront();
+
+        if (this.cellExists(x, y)) {
+            return Err(new Error(";; WIP ;; Karol cant place because of a wall"));
+        } else if (!this.cellIsCuboid(x, y)) {
+            return Err(new Error(";; WIP ;; Karol cant pickup nothing"));
         }
+
+        this.world[x][y] = null;
 
         this.view.redraw();
         return Ok(null);

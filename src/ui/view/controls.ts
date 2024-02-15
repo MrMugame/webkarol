@@ -25,12 +25,17 @@ const pickup = () => {
     controller.getWorld().pickupBrick();
 }
 
-const setMark = () => {
-    controller.getWorld().setMark(Color.Yellow);
+const toggleMark = () => {
+    if (controller.getWorld().isMark()) controller.getWorld().removeMark();
+    else controller.getWorld().setMark(Color.Yellow);
 }
 
 const placeCuboid = () => {
     controller.getWorld().placeCuboid();
+}
+
+const removeCuboid = () => {
+    controller.getWorld().removeCuboid();
 }
 
 
@@ -47,8 +52,12 @@ document.getElementById("view")!.addEventListener("keydown", (event) => {
         case "A":
         case "a": pickup(); break;
         case "M":
-        case "m": setMark(); break;
+        case "m": toggleMark(); break;
         case "Q":
         case "q": placeCuboid(); break;
+        case "E":
+        case "e": removeCuboid(); break;
     }
 })
+
+export { left, right, placeBrick, placeCuboid, forward, backward, pickup, toggleMark, removeCuboid };

@@ -1,3 +1,4 @@
+import "./toolbar";
 
 document.querySelector("#bottom-panel-handle")!.addEventListener("mousedown", () => {
     const resize = (event: MouseEvent) => {
