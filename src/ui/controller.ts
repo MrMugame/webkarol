@@ -29,6 +29,7 @@ class Controller {
 
         this.terminal.clear();
 
+        // TODO: Move all the event handler out of the constructor into a seperate file
         document.querySelector("#btn-start")!.addEventListener("click", () => {
             if (this.running) return;
 
@@ -117,7 +118,9 @@ class Controller {
             return;
         }
 
-        let interpreter = new Interpreter(ast.unwrap(), this.world);
+        let interpreter = new Interpreter(ast.unwrap(), this.world, (lineNumber) => {
+            this.editor.highlightLine(lineNumber);
+        });
         this.runner = interpreter.interpret();
     }
 

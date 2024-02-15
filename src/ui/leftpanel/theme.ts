@@ -70,6 +70,10 @@ export const _karolTheme = EditorView.theme({
 		backgroundColor: "#6199ff2f"
 	},
 
+	// Important for execution highlighting
+	".cm-execLine": { backgroundColor: "#ff2b4866" },
+	".cm-execLine.cm-activeLine": { backgroundColor: "#BD5A9666 !important" },
+
 	".cm-activeLine": { backgroundColor: "#6699ff0b" },
 	".cm-selectionMatch": { backgroundColor: "#aafe661a" },
 

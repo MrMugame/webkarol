@@ -1,9 +1,9 @@
-import { keymap, drawSelection, dropCursor, lineNumbers, EditorView, highlightActiveLine, ViewUpdate } from "@codemirror/view"
-import { Extension, EditorState } from "@codemirror/state"
+import { keymap, drawSelection, dropCursor, lineNumbers, EditorView, highlightActiveLine, ViewUpdate, Decoration } from "@codemirror/view"
+import { Extension, EditorState, StateField, StateEffect } from "@codemirror/state"
 import { indentOnInput, foldGutter, foldKeymap, indentUnit } from "@codemirror/language"
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands"
-import { searchKeymap, highlightSelectionMatches} from "@codemirror/search"
-import { closeBracketsKeymap, closeBrackets} from "@codemirror/autocomplete"
+import { searchKeymap, highlightSelectionMatches } from "@codemirror/search"
+import { closeBracketsKeymap, closeBrackets } from "@codemirror/autocomplete"
 import { lintKeymap } from "@codemirror/lint"
 import { karolTheme } from "./theme"
 import { KarolPackage } from "./grammar/karol"
@@ -13,8 +13,39 @@ const persistentContent = EditorView.updateListener.of((update: ViewUpdate) => {
     localStorage.setItem("editor-content", update.state.doc.toString());
 });
 
+// https://codemirror.net/docs/migration/
+const lineDecoration = Decoration.line({
+    attributes: {class: "cm-execLine"}
+});
+
+const highlightLineEffect = StateEffect.define<number>();
+const highlightLineEffectReset = StateEffect.define();
+
+const markLine = StateField.define({
+    create() { return Decoration.none },
+
+    update(value, transaction) {
+        value = value.map(transaction.changes);
+
+        for (let effect of transaction.effects) {
+            if (effect.is(highlightLineEffect)) {
+                value = Decoration.none;
+                value = value.update({add: [lineDecoration.range(transaction.newDoc.line(effect.value).from)]});
+            } else if (effect.is(highlightLineEffectReset)) {
+                value = Decoration.none;
+            }
+        }
+
+        return value;
+    },
+
+    provide: f => EditorView.decorations.from(f)
+})
+
+
 // Removed: autocompletion, rectangularSelection, highlightActiveLine
 const extensions: Extension = [
+    markLine,
     persistentContent,
     karolTheme,
     KarolPackage(),
@@ -65,5 +96,17 @@ export class Editor {
             extensions: extensions
         }));
         localStorage.setItem("editor-content", text);
+    }
+
+    highlightLine(lineNumber: number) {
+        this.view.dispatch({
+            effects: highlightLineEffect.of(lineNumber)
+        });
+    }
+
+    highlightLineReset() {
+        this.view.dispatch({
+            effects: highlightLineEffectReset.of(null)
+        });
     }
 }

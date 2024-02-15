@@ -59,7 +59,7 @@ export class Interpreter {
     private insideCond = false; // TODO: I think the real karol does some kind of sema to check this. Maybe we should too?
     private state = false;
 
-    constructor(private readonly code: Decl[], readonly world: World) {}
+    constructor(private readonly code: Decl[], readonly world: World, readonly callback: (line: number) => void) {}
 
     public *interpret(): Generator<void, RuntimeResult<null>, undefined> {
         let programNode = this.code.find(x => is(ProgDecl, x));
@@ -81,6 +81,8 @@ export class Interpreter {
     }
 
     private *executeStmt(stmt: Stmt): Generator<void, RuntimeResult<null>, undefined> {
+        this.callback(stmt.position.start.line);
+
         // Stmt, CondLoopStmt, IterLoopStmt, InftyLoopStmt, IfStmt, CallStmt, CondStmt
         if (is(CondLoopStmt, stmt)) {
             while (true) {
