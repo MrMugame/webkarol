@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "npm run build-grammar && tsc && vite build",
     "preview": "vite preview",
     "build-grammar": "lezer-generator src/ui/leftpanel/grammar/syntax.grammar -o src/ui/leftpanel/grammar/parser"
   },
