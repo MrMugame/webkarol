@@ -76,6 +76,8 @@ class World {
         this.world = new Array(this.size.x).fill(null).map(() => new Array(this.size.y).fill(null));
         this.player = { x: 0, y: 0, direction: Rotation.South };
         this.jumpable = 1;
+
+        this.view.init().then(() => this.view.redraw())
     }
 
     get cells(): Cell[][] {
@@ -116,7 +118,6 @@ class World {
     private cellExists(x: number, y: number): boolean {
         return (x < 0 || x >= this.size.x || y < 0 || y >= this.size.y);
     }
-
 
     private cellIsCuboid(x: number, y: number): boolean {
         return this.world[x][y]?.kind === CellType.Cuboid;
@@ -328,6 +329,7 @@ class World {
     }
 
     beep(): void {
+        // Maybe store that audio?
         const beep = new Audio("/assets/beep.wav");
         beep.play();
     }

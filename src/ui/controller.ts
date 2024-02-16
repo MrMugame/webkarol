@@ -7,8 +7,8 @@ import { Parser } from "../lang/parser.ts";
 import { Terminal } from "./bottompanel/terminal.ts";
 import { Interpreter } from "../lang/interpreter.ts";
 import { World } from "./view/world.ts";
-import { BirdeyeView } from "./view/birdeye.ts";
 import { KarolError, Result } from "../lang/util.ts";
+import { CabinetView } from "./view/cabinet.ts";
 
 
 type Runner = Generator<void, Result<null, KarolError>, undefined>;
@@ -23,7 +23,8 @@ class Controller {
     constructor() {
         this.editor = new Editor(document.getElementById("editor")!);
         this.terminal = new Terminal(document.getElementById("bottom-panel-console")!);
-        this.world = new World({x: 5, y: 10, z: 5}, new BirdeyeView(document.getElementById("view") as HTMLDivElement));
+        //this.world = new World({x: 5, y: 10, z: 5}, new BirdeyeView(document.getElementById("view") as HTMLDivElement));
+        this.world = new World({x: 5, y: 10, z: 5}, new CabinetView(document.getElementById("view") as HTMLDivElement));
         this.running = false;
         this.runner = null;
 

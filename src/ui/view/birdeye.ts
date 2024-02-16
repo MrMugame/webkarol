@@ -1,109 +1,41 @@
-import { BLOCKSIZE, COLORS, GREY, MARGIN, View } from "./view";
-import { CellType, World } from "./world";
+import { BLOCKSIZE, COLORS, CanvasView, GREY } from "./view";
+import { CellType } from "./world";
 
+const M = 3;
 
-class BirdeyeView implements View {
-    private world: World | null = null;
-
-    private readonly container: HTMLDivElement;
-    private readonly background: HTMLCanvasElement;
-    private readonly foreground: HTMLCanvasElement;
-
-    private readonly observer: ResizeObserver;
-
+class BirdeyeView extends CanvasView {
     constructor(element: HTMLDivElement) {
-        this.container = element;
-
-        // Create canvas for background and foreground, so we can layer them.
-        // This lets us redraw the foreground (Karol , Bricks) without redrawing
-        // the background
-        this.background = document.createElement("canvas");
-        this.background.style.zIndex = "1";
-        this.container.appendChild(this.background);
-
-        this.foreground = document.createElement("canvas");
-        this.foreground.style.zIndex = "2";
-        this.container.appendChild(this.foreground);
-
-        this.observer = new ResizeObserver(this.updateSize.bind(this));
-        this.observer.observe(this.container);
-
-        this.updateScreen();
+        super(element);
     }
 
-    setWorld(world: World): void {
-        this.world = world;
-    }
+    async init() { return; }
 
-    kill() {
-        this.observer.disconnect();
-    }
-
-    redraw() {
-        this.drawForeground();
-    }
-
-    private updateSize(entries: ResizeObserverEntry[]) {
-        let box = entries[0].contentBoxSize[0];
-
-        this.background.width = box.inlineSize;
-        this.background.height = box.blockSize;
-        this.foreground.width = box.inlineSize;
-        this.foreground.height = box.blockSize;
-
-        this.updateScreen();
-    }
-
-    private updateScreen() {
-        this.drawBackground();
-        this.drawForeground();
-    }
-
-    private initCanvas(ctx: CanvasRenderingContext2D) {
-        ctx.translate(MARGIN.x+0.5, MARGIN.y+0.5);
-        // TODO: Scale
-    }
-
-    private drawBackground() {
-        if (this.world === null) return; // TODO: Maybe send error message (+ foreground)
-
-        let ctx = this.background.getContext("2d");
-        if (ctx === null) return; // TODO: Maybe try regenerating the canvas here? (+ foreground)
-        ctx.save();
-
-        ctx.clearRect(0, 0, this.background.width, this.background.height);
-        this.initCanvas(ctx);
+    protected drawBackground() {
+        let ctx = this.initCanvas(this.background);
+        if (ctx === null) return;
+        if (this.world === null) return;
 
         ctx.strokeStyle = "#0000ff";
         for (let i = 0; i <= this.world.worldSize.x; i++) {
-            ctx.beginPath();
-            ctx.moveTo(i * BLOCKSIZE, 0);
-            ctx.lineTo(i * BLOCKSIZE, BLOCKSIZE * this.world.worldSize.y);
-            ctx.stroke();
-            ctx.closePath();
+            let p1 = {x: i * BLOCKSIZE, y: 0};
+            let p2 = {x: i * BLOCKSIZE, y: BLOCKSIZE * this.world.worldSize.y};
+
+            CanvasView.drawLine(ctx, p1, p2);
         }
         for (let i = 0; i <= this.world.worldSize.y; i++) {
-            ctx.beginPath();
-            ctx.moveTo(0, i * BLOCKSIZE);
-            ctx.lineTo(BLOCKSIZE * this.world.worldSize.x, i * BLOCKSIZE);
-            ctx.stroke();
-            ctx.closePath();
+            let p1 = {x: 0, y: i * BLOCKSIZE};
+            let p2 = {x: BLOCKSIZE * this.world.worldSize.x, y: i * BLOCKSIZE};
+
+            CanvasView.drawLine(ctx, p1, p2);
         }
 
         ctx.restore();
     }
 
-    private drawForeground() {
-        if (this.world === null) return;
-
-        let ctx = this.foreground.getContext("2d");
+    protected drawForeground() {
+        let ctx = this.initCanvas(this.background);
         if (ctx === null) return;
-        ctx.save();
-
-        ctx.clearRect(0, 0, this.foreground.width, this.foreground.height);
-        this.initCanvas(ctx);
-
-        let m = 3;
+        if (this.world === null) return;
 
         for (let i = 0; i < this.world.worldSize.x; i++) {
             for (let k = 0; k < this.world.worldSize.y; k++) {
@@ -112,11 +44,11 @@ class BirdeyeView implements View {
 
                 let [x, y] = [i*BLOCKSIZE, k*BLOCKSIZE];
 
-                let [a, b, c, d] = [x+m, y+m, BLOCKSIZE-m*2, BLOCKSIZE-m*2];
+                let [a, b, c, d] = [x+M, y+M, BLOCKSIZE-M*2, BLOCKSIZE-M*2];
                 if (cell.kind === CellType.Bricks) {
                     // TODO: Make color changable
 
-                    ctx.lineWidth = m;
+                    ctx.lineWidth = M;
                     if (cell.mark !== null) {
                         ctx.fillStyle = COLORS.get(cell.mark)!.stroke;
                         ctx.strokeStyle = "#000000";
@@ -156,10 +88,10 @@ class BirdeyeView implements View {
         ctx.rotate(direction*(Math.PI/2));
 
         ctx.beginPath();
-        ctx.moveTo(0,               -BLOCKSIZE/2+m);
-        ctx.lineTo(-BLOCKSIZE/2+m/2, BLOCKSIZE/2-m);
-        ctx.lineTo( BLOCKSIZE/2-m/2, BLOCKSIZE/2-m);
-        ctx.lineTo(0,               -BLOCKSIZE/2+m);
+        ctx.moveTo(0,               -BLOCKSIZE/2+M);
+        ctx.lineTo(-BLOCKSIZE/2+M/2, BLOCKSIZE/2-M);
+        ctx.lineTo( BLOCKSIZE/2-M/2, BLOCKSIZE/2-M);
+        ctx.lineTo(0,               -BLOCKSIZE/2+M);
         ctx.fill();
         ctx.closePath();
 
