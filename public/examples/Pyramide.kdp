@@ -1,0 +1,134 @@
+{
+    `Pyramide` Beispiel für Webkarol
+    Dieses Programm baut in einer beliebigen Welt eine Pyramide
+}
+
+Anweisung Umdrehen
+    LinksDrehen
+    LinksDrehen
+endeAnweisung
+
+Anweisung Unterlegen
+    Schritt
+    Umdrehen
+    Hinlegen
+    Umdrehen
+endeAnweisung
+
+Anweisung Diagonal1
+    Schritt
+    LinksDrehen
+    Schritt
+    RechtsDrehen
+endeAnweisung
+
+Anweisung Kranz
+    wiederhole 4 mal
+        wiederhole solange NichtIstWand
+            Hinlegen
+            Schritt
+            MarkeSetzen
+        endeWiederhole
+        LinksDrehen
+    endeWiederhole
+    Diagonal1
+endeAnweisung
+
+Anweisung KranzFuellen
+    wiederhole solange NichtIstMarke
+        Unterlegen
+        wenn IstMarke dann
+            LinksDrehen
+            Schritt
+            LinksDrehen
+            Schritt
+            wiederhole solange NichtIstMarke
+                Schritt
+            endeWiederhole
+            Umdrehen
+            Schritt
+        endewenn
+    endeWiederhole
+    RechtsDrehen
+    Schritt
+    RechtsDrehen
+    Schritt
+endeAnweisung
+
+Anweisung Pyramidenring
+    wiederhole 4 mal
+        wiederhole solange NichtIstMarke
+            MarkeSetzen
+            Unterlegen
+        endeWiederhole
+        Umdrehen
+        Schritt
+        RechtsDrehen
+        Schritt
+    endeWiederhole
+endeAnweisung
+
+Anweisung Ausgangsposition
+    wiederhole 2 mal
+        wiederhole solange NichtIstWand
+            Schritt
+        endeWiederhole
+        LinksDrehen
+    endeWiederhole
+endeAnweisung
+
+Anweisung ZumStart
+    RechtsDrehen
+    wiederhole 2 mal
+        wiederhole solange NichtIstWand
+            Schritt
+        endeWiederhole
+        LinksDrehen
+    endeWiederhole
+endeAnweisung
+
+Anweisung KranzMarkeWeg
+    wiederhole 4 mal
+        wiederhole solange NichtIstWand
+            Schritt
+            MarkeLöschen
+        endeWiederhole
+        LinksDrehen
+    endeWiederhole
+endeAnweisung
+
+Anweisung RingMarkeWeg
+    wiederhole 4 mal
+        wiederhole solange IstMarke
+            MarkeLöschen
+            Schritt
+        endeWiederhole
+        Umdrehen
+        Schritt
+        RechtsDrehen
+        Schritt
+    endeWiederhole
+    LinksDrehen
+    wenn IstMarke dann
+        RechtsDrehen
+    sonst
+        Umdrehen
+        Schritt
+    endeWenn
+endeAnweisung
+
+Programm
+    Kranz
+    KranzFuellen
+    wiederhole solange NichtIstMarke
+        Pyramidenring
+        KranzFuellen
+    endeWiederhole
+    Ausgangsposition
+    KranzMarkeWeg
+    Diagonal1
+    wiederhole solange IstMarke
+        RingMarkeWeg
+    endeWiederhole
+    ZumStart
+endeProgramm

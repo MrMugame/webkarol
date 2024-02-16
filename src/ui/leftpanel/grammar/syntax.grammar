@@ -1,0 +1,124 @@
+// For highlighting, we really dont care about any order
+@top Porgram { (Decl | Stmt)* }
+
+@skip {} {
+	Comment { "{" (commentContent)* commentEnd }
+}
+
+@skip { spaces | Comment }
+
+@local tokens {
+  commentEnd { "}" }
+  @else commentContent
+}
+
+Decl { FuncDecl | CondDecl | ProgDecl }
+
+// <funcDecl> ::= anweisung <identifier> <body> (endeanweisung | *anweisung)
+FuncDecl {
+	Anweisung FunctionName Body EndeAnweisung
+}
+
+// <condDecl> ::= bedingung <identifier> <body> (endebedingung | *bedingung)
+CondDecl {
+	Bedingung FunctionName Body EndeBedingung
+}
+
+// <progDecl> ::= programm <body> (endeprogramm | *programm)
+ProgDecl {
+	Programm Body EndeProgramm
+}
+
+// <body> ::= {<stmt>}
+Body { Stmt* }
+
+// <stmt> ::=  <condLoopStmt> | <iterLoopStmt> | <inftyLoopStmt> | <ifStmt> | <callStmt>
+Stmt {
+	CallStmt |
+	CondLoopStmt |
+	IterLoopStmt |
+	InftyLoopStmt |
+	IfStmt |
+	TruthStmt
+}
+
+// <callStmt> :: <identifier> [([<identifier> | <number>])]
+CallStmt {
+	VariableName ("(" Color | Number ")")?
+}
+
+TruthStmt {
+	Wahr | Falsch
+}
+
+// <condLoopStmt> ::= wiederhole solange <cond> <body> (endewiederhole | *wiederhole)
+CondLoopStmt {
+	Wiederhole Solange CondStmt Body EndeWiederhole
+}
+
+// <iterLoopStmt> ::= wiederhole <number> mal <body> (endewiederhole | *wiederhole)
+IterLoopStmt {
+	Wiederhole Number Mal Body EndeWiederhole
+}
+
+// <inftyLoopStmt> ::= wiederhole immer <body> (endewiederhole | *wiederhole)
+InftyLoopStmt {
+	Wiederhole Immer Body EndeWiederhole
+}
+
+// <ifStmt> ::= wenn <cond> dann <body> [sonst <body>] endewenn
+IfStmt {
+	Wenn CondStmt Dann Body (Sonst Body)? EndeWenn
+}
+
+CondStmt {
+	Nicht? VariableName ("(" Color | Number ")")?
+}
+
+
+VariableName { identifier }
+FunctionName { identifier }
+Color { Rot | Gruen | Blau | Gelb | Schwarz }
+
+@external specialize { identifier } keywords from "./tokens" {
+	Wiederhole,
+	Mal,
+	Solange,
+	EndeWiederhole,
+	Wenn,
+	Dann,
+	Sonst,
+	Nicht,
+	Immer,
+	EndeWenn,
+	Anweisung,
+	EndeAnweisung,
+	Bedingung,
+	EndeBedingung,
+	Programm,
+	EndeProgramm,
+	Wahr,
+	Falsch
+}
+
+@external specialize { identifier } colors from "./tokens" {
+	Rot,
+	Gelb,
+	Blau,
+	Gruen,
+	Schwarz
+}
+
+@tokens {
+	spaces { (@whitespace | ";")+ }
+
+	identifier { "*"? letter (@digit | letter)* }
+
+	letter { @asciiLetter | "ü" | "ä" | "ö" | "Ü" | "Ä" | "Ö" | "_" }
+
+	Number { @digit+ }
+
+	@precedence { identifier, spaces }
+
+	"(" ")"
+}

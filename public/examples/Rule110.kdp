@@ -1,0 +1,151 @@
+{
+  `Rule110` Beispiel für Webkarol
+  Dieses Programm baut das Rule 110 Muster wie es
+  auf z.B. Wikipedia beschrieben wird
+  https://en.wikipedia.org/wiki/Rule_110
+}
+
+Anweisung Platzieren
+  Schritt
+  RechtsDrehen
+  RechtsDrehen
+  Hinlegen
+  Schritt
+  RechtsDrehen
+  RechtsDrehen
+endeAnweisung
+
+Anweisung AusgangsPositionErreichen
+  LinksDrehen
+  wiederhole solange nichtIstWand
+    Schritt
+  endeWiederhole
+  RechtsDrehen
+  RechtsDrehen
+  Hinlegen
+  LinksDrehen
+endeAnweisung
+
+Anweisung LinksSchritt
+  LinksDrehen
+  Schritt
+  RechtsDrehen
+endeAnweisung
+
+Anweisung RechtsSchritt
+  RechtsDrehen
+  Schritt
+  LinksDrehen
+endeAnweisung
+
+Bedingung RechtsWand
+  RechtsDrehen
+  wenn istWand dann
+    Wahr
+  sonst
+    Falsch
+  endewenn
+  LinksDrehen
+endeBedingung
+
+Bedingung B111
+  LinksSchritt
+
+  wenn istZiegel dann
+    RechtsSchritt
+    wenn istZiegel dann
+      RechtsSchritt
+      wenn istZiegel dann
+        Wahr
+      sonst
+        Falsch
+      endeWenn
+      LinksSchritt
+    sonst
+      Falsch
+    endewenn
+  sonst
+    RechtsSchritt
+    Falsch
+  endewenn
+endeBedingung
+
+Bedingung B100
+  LinksSchritt
+
+  wenn istZiegel dann
+    RechtsSchritt
+    wenn NichtistZiegel dann
+      RechtsSchritt
+      wenn NichtistZiegel dann
+        Wahr
+      sonst
+        Falsch
+      endeWenn
+      LinksSchritt
+    sonst
+      Falsch
+    endewenn
+  sonst
+    RechtsSchritt
+    Falsch
+  endewenn
+endeBedingung
+
+Bedingung B000
+  LinksSchritt
+
+  wenn NichtIstZiegel dann
+    RechtsSchritt
+    wenn NichtistZiegel dann
+      RechtsSchritt
+      wenn NichtistZiegel dann
+        Wahr
+      sonst
+        Falsch
+      endeWenn
+        LinksSchritt
+    sonst
+      Falsch
+    endewenn
+  sonst
+    RechtsSchritt
+    Falsch
+  endewenn
+endeBedingung
+
+
+Anweisung ReiheBauen
+  Schritt
+  RechtsDrehen
+
+  wiederhole solange nichtIstWand
+    Schritt
+  endeWiederhole
+
+  RechtsDrehen
+  RechtsSchritt
+
+  wiederhole solange nicht RechtsWand
+    wenn nicht B111 dann
+      wenn nicht B100 dann
+        wenn nicht B000 dann
+          Platzieren
+        endewenn
+      endewenn
+    endewenn
+
+    RechtsSchritt
+  endewiederhole
+
+  RechtsDrehen
+  RechtsDrehen
+endeAnweisung
+
+Programm
+  AusgangsPositionErreichen
+
+  wiederhole solange nichtIstWand
+    ReiheBauen
+  endewiederhole
+endeProgramm

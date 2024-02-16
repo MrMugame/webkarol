@@ -1,0 +1,339 @@
+:root {
+    --color-grey1: #444444;
+    --color-grey2: #171717;
+    /* --color-blue1: rgba(53, 126, 199, 55%); */
+    --color-blue1: #3b72ff;
+    --color-background: #2c2c2c;
+
+    --toolbar-height: 1.5rem;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    font-family: sans-serif;
+}
+
+body {
+    position: relative;
+    background-color: var(--color-background);
+    display: inline-block;
+    width: 100%;
+    height: 100vh;;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+#navbar {
+    display: flex;
+    flex-direction: row;
+    z-index: 100;
+    position: fixed;
+    width: 100%;
+    height: var(--toolbar-height);
+    background-color: var(--color-grey2);
+    border-bottom: 1px solid var(--color-grey1);
+}
+
+.dropdown {
+    position: relative;
+    height: 100%;
+    width: min-content;
+}
+
+.dropdown-button {
+    height: 100%;
+    padding: 0 0.5rem;
+    font-size: 0.8rem;
+    background-color: transparent;
+    color: white;
+    border: 1px solid transparent;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    font-size: 0.8rem;
+    background-color: #f1f1f1;
+    min-width: 150px;
+    z-index: 100;
+    border: 1px solid var(--color-grey1);
+    background-color: var(--color-background);
+    padding: 1px;
+}
+
+.dropdown-content button, .dropdown-content a {
+    display: block;
+    color: white;
+    padding: 0.4rem 0.4rem;
+    text-decoration: none;
+    display: block;
+    border: none;
+    background-color: transparent;
+    width: 100%;
+    text-align: left;
+    cursor: default;
+}
+
+.dropdown-content button:hover, .dropdown-content a:hover {
+    background-color: var(--color-blue1);
+}
+
+.dropdown.active .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropdown-button, .dropdown.active .dropdown-button {
+    background-color: var(--color-blue1);
+    border: 1px solid var(--color-blue1);
+}
+
+
+
+#content {
+    display: flex;
+    flex-direction: row;
+    padding-top: var(--toolbar-height);
+    width: 100%;
+    height: 100%;
+}
+
+#left-panel {
+    flex-shrink: 0;
+    position: relative;
+    min-width: 250px;
+    max-width: calc(100% - 250px);
+    width: 400px;
+    border-right: 1px solid var(--color-grey1);
+}
+
+#left-panel-handle {
+    height: 100%;
+    width: 10px;
+    position: absolute;
+    right: -5px;
+    top: 0;
+    z-index: 10;
+}
+
+#left-panel-handle:hover {
+    cursor: col-resize;
+}
+
+#view {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#view:focus {
+    z-index: 2;
+    outline: 1px dotted #212121;
+}
+
+#view canvas {
+    position: absolute;
+}
+
+#editor {
+    height: 100%;
+}
+
+#right-panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+#bottom-panel {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    flex-shrink: 0;
+    width: 100%;
+    min-height: 100px;
+    max-height: calc(100% - 100px);
+    height: 250px;
+    background-color: var(--color-background);
+    border-top: 1px solid var(--color-grey1);
+}
+
+#bottom-panel-handle {
+    width: 100%;
+    height: 10px;
+    position: absolute;
+    top: -5px;
+    right: 0;
+    z-index: 10;
+}
+
+#bottom-panel-handle:hover {
+    cursor: row-resize;
+}
+
+#bottom-panel-bar {
+    padding: 5px;
+    display: flex;
+    gap: 0.75rem;
+    flex-direction: row;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--color-grey1);
+}
+
+#bottom-panel-bar button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    height: 100%;
+    padding: 0;
+    aspect-ratio: 1 / 1;
+    font-size: 17px;
+}
+
+#bottom-panel-bar button:hover {
+    color: #aaaaaa;
+}
+
+.bottom-panel-bar-spacer {
+    height: 100%;
+    width: 1px;
+    border-left: 1px solid var(--color-grey1);
+    margin: 0;
+}
+
+#bottom-panel-console {
+    width: 100%;
+    height: 100%;
+    padding: 0.25rem;
+    color: white;
+    font-family: monospace;
+}
+
+
+dialog[open] {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border: 1px solid var(--color-grey1);
+    background-color: var(--color-background);
+}
+
+dialog p {
+    font-family: sans-serif;
+    margin: 0.5rem;
+    color: white;
+    font-size: 0.9rem;
+}
+
+dialog .bar h1 {
+    font-family: sans-serif;
+    font-weight: normal;
+    font-size: 0.9rem;
+    margin: 0;
+    color: white;
+}
+
+dialog .bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 0.5rem;
+    width: 100%;
+    height: 2rem;
+    min-height: 2rem;
+    border-bottom: 1px solid var(--color-grey1);
+    background-color: var(--color-grey2);
+}
+
+dialog .prompt {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0;
+}
+
+dialog .prompt button {
+    flex: 0.20 1 0;
+    border: none;
+    color: white;
+    background-color: var(--color-grey2);
+    padding: 4px;
+    border: 1px solid var(--color-grey1);
+}
+
+dialog .prompt button:hover {
+    background-color: var(--color-blue1);
+}
+
+dialog::backdrop {
+    z-index: 99;
+    background-color: rgba(0, 0, 0, 50%);
+}
+
+#modal-help {
+    width: 60%;
+    height: 60%;
+}
+
+#modal-help .content {
+    padding: 1rem;
+    overflow: scroll;
+    font-family: sans-serif;
+    color: white;
+}
+
+#modal-help .content h2, h3, h4 {
+    margin: 0;
+}
+
+#modal-help .content p {
+    text-align: justify;
+}
+
+#modal-help a {
+    text-decoration: none;
+    color: #3b72ff;
+}
+
+#modal-new-world .content {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    grid-gap: 1rem;
+    margin: 1.5rem;
+    width: 15rem;
+    justify-content: center;
+}
+
+#modal-new-world label {
+    color: white;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    text-align: right;
+    display: flex;
+    align-items: center
+}
+
+#indicator {
+    display: none;
+    margin: 1rem;
+    font-family: sans-serif;
+    color: white;
+    opacity: 50%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+#indicator.shown {
+    display: block;
+}
+
+/* #bottom-panel-bar button:active {
+    color: var(--color-blue1);
+} */
