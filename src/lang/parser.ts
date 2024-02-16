@@ -73,7 +73,7 @@ export class Parser extends Lexer {
 				if (!decl.isOk()) return Err(decl.unwrapErr());
 				result.push(decl.unwrap());
 				return Ok(result);
-			} else if (this.at(TK.BEDINGUNG, TK.ANWEISUNG)) return Err(new KarolError(";; WIP ;; Condition or Function Decleration after Stmts", this.location()));
+			} else if (this.at(TK.BEDINGUNG, TK.ANWEISUNG)) return Err(new KarolError("Auf dem Programmblock dürfen keine Anweisungen oder Bedingungen folgen", this.location()));
 
 			let stmt = this.parseStmt();
 			if(!stmt.isOk()) return Err(stmt.unwrapErr());
@@ -91,7 +91,7 @@ export class Parser extends Lexer {
 		else if (this.at(TK.ANWEISUNG)) return this.parseFuncDecl();
 		else if (this.at(TK.PROGRAMM)) return this.parseProgDecl();
 
-		return Err(new KarolError(";; WIP ;; Couldn't parse declaration", this.location()));
+		return Err(new KarolError("Karol hat eine Anweisung, Bedingung oder ein Programm erwartet, jedoch nicht gefunden", this.location()));
 	}
 
 	// <condDecl> ::= bedingung <identifier> <body> (endebedingung | *bedingung)
@@ -101,7 +101,7 @@ export class Parser extends Lexer {
 		assert(this.consume(TK.BEDINGUNG), "parseCondDecl() was called without `bedingung`");
 
 		let name = this.currToken.value;
-		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError(";; WIP ;; Bedingung not followed by identifier", this.location()));
+		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError("Karol erwartet nach dem Wort `Bedingung` einen Namen", this.location()));
 
 		let body = this.parseBody(TK.ENDE_BEDINGUNG);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -117,7 +117,7 @@ export class Parser extends Lexer {
 		assert(this.consume(TK.ANWEISUNG), "parseFuncDecl() was called without `anweisung`");
 
 		let name = this.currToken.value;
-		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError(";; WIP ;; Anweisung not followed by identifier", this.location()));
+		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError("Karol erwartet nach dem Wort `Anweisung` einen Namen", this.location()));
 
 		let body = this.parseBody(TK.ENDE_ANWEISUNG);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -155,7 +155,7 @@ export class Parser extends Lexer {
 		else if (this.at(TK.IMMER)) return this.parseInftyLoop(loc);
 		else if (this.at(TK.INT_LITERAL)) return this.parseIterLoop(loc);
 
-		return Err(new KarolError(";; WIP ;; Unknown Token after wiederhole", this.location()));
+		return Err(new KarolError("Karol hat nach `wiederhole` ein `solange`, `immer` oder eine Zahl erwartet, jedoch nicht gefunden", this.location()));
 	}
 
 	// <condLoopStmt> ::= wiederhole solange <cond> <body> (endewiederhole | *wiederhole)
@@ -190,7 +190,7 @@ export class Parser extends Lexer {
 		let number = parseInt(this.currToken.value!);
 		this.nextToken();
 
-		if (!this.consume(TK.MAL)) return Err(new KarolError(";; WIP ;; Expected mal after wiederhole", this.location()));
+		if (!this.consume(TK.MAL)) return Err(new KarolError("Karol hat nach der Wiederholungszahl ein `mal` erwartet, jedoch nicht gefunden", this.location()));
 
 		let body = this.parseBody(TK.ENDE_WIEDERHOLE);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -208,7 +208,7 @@ export class Parser extends Lexer {
 		let cond = this.parseCond();
 		if (!cond.isOk()) return Err(cond.unwrapErr());
 
-		if (!this.consume(TK.DANN)) return Err(new KarolError(";; WIP ;; expected dann after condition", this.location()));
+		if (!this.consume(TK.DANN)) return Err(new KarolError("Karol hat nach der Wenn-Bedingung ein `dann` erwartet, jedoch nicht gefunden", this.location()));
 
 		let body = this.parseBody(TK.ENDE_WENN, TK.SONST);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -235,7 +235,7 @@ export class Parser extends Lexer {
 
 			this.consume(TK.WAHR, TK.FALSCH);
 			return Ok(stmt);
-		} else if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError(";; WIP ;; Couldn't find Identifier Token in call", this.location()));
+		} else if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError("Karol ist auf ein unerwartetes Wort gestoßen", this.location()));
 
 		let value : string | number | null = null;
 		if (this.at(TK.LPREN)) {
@@ -254,7 +254,7 @@ export class Parser extends Lexer {
 		let not = this.consume(TK.NICHT);
 
 		let name = this.currToken.value;
-		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError(";; WIP ;; Couldn't find Indentifier Token in condition", this.location()));
+		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError("Karol hat eine Bedingung erwartet, jedoch nicht gefunden", this.location()));
 
 		let value : string | number | null = null;
 		if (this.at(TK.LPREN)) {
@@ -271,9 +271,9 @@ export class Parser extends Lexer {
 		assert(this.consume(TK.LPREN), "parseParams() was called without `(`")
 
 		let value = this.at(TK.INT_LITERAL) ? parseInt(this.currToken.value!) : this.currToken.value;
-		if (!this.consume(TK.INT_LITERAL, TK.IDENTIFIER) || value === null) return Err(new KarolError(";; WIP ;; Didnt expect ... after (", this.location()));
+		if (!this.consume(TK.INT_LITERAL, TK.IDENTIFIER) || value === null) return Err(new KarolError("Karol hat entweder eine Farbe oder eine Zahl in den Klammern erwartet, jedoch nicht gefunden", this.location()));
 
-		if (!this.consume(TK.RPREN)) return Err(new KarolError(";; WIP ;; Expected ) after (", this.location()));
+		if (!this.consume(TK.RPREN)) return Err(new KarolError("Karol hat nach der offenen Klammer eine geschlossene erwartet, jedoch nicht gefunden", this.location()));
 
 		return Ok(value);
 	}
@@ -285,7 +285,7 @@ export class Parser extends Lexer {
 		let results: Stmt[] = [];
 
 		while(!this.at(...last)) {
-			if (this.at(TK.EOF)) return Err(new KarolError(";; WIP ;; Reached EOF in body", this.location()));
+			if (this.at(TK.EOF)) return Err(new KarolError("Karol hat unerwartet das Ende der Datei erreicht", this.location()));
 
 			let stmt = this.parseStmt();
 			if (!stmt.isOk()) return Err(stmt.unwrapErr());

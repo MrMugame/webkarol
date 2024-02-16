@@ -1,6 +1,6 @@
 import { Color, Rotation, World } from "../ui/view/world";
 import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, InftyLoopStmt, IterLoopStmt, ProgDecl, Stmt, TruthStmt } from "./ast";
-import { KarolError, Result, flatten, is } from "./util";
+import { KarolError, Result, assert, flatten, is } from "./util";
 
 const colors: Map<string, Color> = new Map([
     ["rot", Color.Red],
@@ -63,9 +63,10 @@ export class Interpreter {
 
     public *interpret(): Generator<void, RuntimeResult<null>, undefined> {
         let programNode = this.code.find(x => is(ProgDecl, x));
-        if (programNode == undefined) return Err(new KarolError(";; WIP ;; Couldn't find program node", this.code[0].position));
+        //if (programNode == undefined) return Err(new KarolError("Karol konnte kein Einstiegspunkt finden", this.code[0].position));
+        assert(programNode !== undefined, "Karol couldn't find programNode");
 
-        let res = yield* this.executeStmts(programNode.body);
+        let res = yield* this.executeStmts(programNode!.body);
         if (!res.isOk()) return res;
 
         return Ok(null);
@@ -122,14 +123,14 @@ export class Interpreter {
                 yield;
             } else {
                 let decl = this.code.find(x => is(FuncDecl, x) && x.name === stmt.name);
-                if (decl === undefined) return Err(new KarolError(";; WIP ;; Couldn't find call decl", stmt.position));
+                if (decl === undefined) return Err(new KarolError("Karol konnte die aufgerufene Anweisung nicht finden", stmt.position));
                 let res = yield* this.executeStmts(decl.body);
                 if (!res.isOk()) return res;
             }
         } else if (is(TruthStmt, stmt)) {
-            if (!this.insideCond) return Err(new KarolError(";; WIP ;; cant run wahr/falsch inside cond", stmt.position));
+            if (!this.insideCond) return Err(new KarolError("Karol kann wahr und falsch nur in Bedingungen nutzen", stmt.position));
             this.state = stmt.value;
-        } else return Err(new KarolError(";; WIP ;; Karol ran into an unknown error", stmt.position));
+        } else return Err(new KarolError("Karol ist auf einen unbekannten Fehler getroffen", stmt.position));
 
         return Ok(null);
     }
@@ -144,7 +145,7 @@ export class Interpreter {
             truthy = res.unwrap();
         } else {
             let decl = this.code.find(x => is(CondDecl, x) && x.name == cond.name);
-            if (decl === undefined) return Err(new KarolError(";; WIP ;; Couldn't find cond decl", cond.position));
+            if (decl === undefined) return Err(new KarolError("Karol konnte die aufgerufene Bedingung nicht finden", cond.position));
 
             this.insideCond = true;
             this.state = false;
@@ -160,8 +161,8 @@ export class Interpreter {
     }
 
     private executeInternalCallback<T>(callback: WorldFunction<T>, parameter: string | number | null): Result<T> {
-        if (!callback.takesColor && typeof parameter === "string") return Err(new Error(";; WIP ;; Can't pass string here"));
-        else if (!callback.takesNum && typeof parameter === "number") return Err(new Error(";; WIP ;; Can't pass number here"));
+        if (!callback.takesColor && typeof parameter === "string") return Err(new Error("Die aufgerufene Anweisung nimmt keine Farben"));
+        else if (!callback.takesNum && typeof parameter === "number") return Err(new Error("Die aufgerufene Anweisung nimmt keine Zahl"));
 
         let number: number | null = typeof parameter === "number" ? parameter : null;
 
@@ -169,7 +170,7 @@ export class Interpreter {
         if (typeof parameter === "string") {
             let element = colors.get(parameter);
             if (element !== undefined) color = element;
-            else return Err(new Error(";; WIP ;; Couldn't find specified color"));
+            else return Err(new Error("Karol konnte die angegebene Farbe nicht finden"));
         }
 
         if (!callback.takesColor && !callback.takesNum) {

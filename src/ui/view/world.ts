@@ -168,11 +168,11 @@ class World {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cant walk into wall"));
+            return Err(new Error("Karol steht vor einer Wand und kann somit nicht weiter gehen"));
         } else if (this.cellIsCuboid(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cant walk into cuboid"));
+            return Err(new Error("Karol steht vor einem Quader und kann somit nicht weiter gehen"));
         } else if (this.cellIsNotJumpable(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cant jump that high"));
+            return Err(new Error("Karol steht kann nicht so hoch/tief springen"));
         }
 
         this.player.x = x;
@@ -211,11 +211,11 @@ class World {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cant place because of a wall"));
+            return Err(new Error("Karol steht vor einer Wand und kann somit keinen Ziegel platzieren"));
         } else if (this.cellIsCuboid(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cell infront is a cuboid"));
+            return Err(new Error("Karol steht vor einem Quader und kann somit keinen Ziegel platzieren"));
         } else if (this.cellIsFull(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cell is full"));
+            return Err(new Error("Karol steht vor einer vollen Zelle und kann somit keinen Ziegel platzieren"));
         }
 
         color = color ?? Color.Red;
@@ -234,11 +234,11 @@ class World {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cant place because of a wall"));
+            return Err(new Error("Karol steht vor einer Wand und kann somit keinen Ziegel aufheben"));
         } else if (this.cellIsCuboid(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cell infront is a cuboid"));
+            return Err(new Error("Karol steht vor einem Quader und kann somit auch keinen Ziegel aufheben"));
         } else if (this.cellIsEmpty(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cell is empty"));
+            return Err(new Error("Karol steht vor einer keinem Ziegel und kann somit auch keinen aufheben"));
         }
 
         let cell = this.world[x][y];
@@ -283,9 +283,9 @@ class World {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cant place because of a wall"));
+            return Err(new Error("Karol steht vor einer Wand und kann somit kein Quader setzen"));
         } else if (!this.cellIsEmpty(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cell is not empty"));
+            return Err(new Error("Karol steht vor einem oder mehreren Ziegel(n) und kann somit kein Quader setzen"));
         }
 
         this.world[x][y] = { kind: CellType.Cuboid };
@@ -298,9 +298,9 @@ class World {
         let [x, y] = this.cellInFront();
 
         if (this.cellExists(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cant place because of a wall"));
+            return Err(new Error("Karol steht vor einer Wand und kann somit kein Ziegel aufheben"));
         } else if (!this.cellIsCuboid(x, y)) {
-            return Err(new Error(";; WIP ;; Karol cant pickup nothing"));
+            return Err(new Error("Karol steht nicht vor einem Quader und kann somit auch keinen aufheben"));
         }
 
         this.world[x][y] = null;
