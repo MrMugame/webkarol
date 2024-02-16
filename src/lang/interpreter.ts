@@ -6,7 +6,8 @@ const colors: Map<string, Color> = new Map([
     ["rot", Color.Red],
     ["gelb", Color.Yellow],
     ["blau", Color.Blue],
-    ["grün", Color.Green]
+    ["grün", Color.Green],
+    ["schwarz", Color.Black]
 ]);
 
 type WorldFunction<T> = {takesColor: false, takesNum: false, func: (w: World) => T}

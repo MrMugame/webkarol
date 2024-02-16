@@ -6,6 +6,7 @@ type ColoredImages = {
     blue: HTMLImageElement,
     green: HTMLImageElement,
     yellow: HTMLImageElement,
+    black?: HTMLImageElement
 };
 
 const colorToImage = (imgs: ColoredImages, color: Color): HTMLImageElement => {
@@ -14,6 +15,7 @@ const colorToImage = (imgs: ColoredImages, color: Color): HTMLImageElement => {
         case Color.Green: return imgs.green;
         case Color.Blue: return imgs.blue;
         case Color.Red: return imgs.red;
+        case Color.Black: return imgs.black ?? imgs.red;
     }
 }
 
@@ -69,6 +71,7 @@ class CabinetView extends CanvasView {
             blue: loadImage("assets/mark_blue.png"),
             yellow: loadImage("assets/mark_yellow.png"),
             green: loadImage("assets/mark_green.png"),
+            black: loadImage("assets/mark_black.png"),
         }
 
         this.CUBOID_IMG = loadImage("assets/cuboid.png");

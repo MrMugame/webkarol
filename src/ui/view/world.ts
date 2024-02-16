@@ -49,12 +49,12 @@ const enum CellType {
     Cuboid
 }
 
-// Add black for marks
 const enum Color {
     Yellow,
     Green,
     Blue,
-    Red
+    Red,
+    Black
 }
 
 const Err = Result.Err, Ok = Result.Ok;
@@ -209,6 +209,8 @@ class World {
 
     placeBrick(color: Color | null): Result<null> {
         let [x, y] = this.cellInFront();
+
+        if (color !== null && color === Color.Black) return Err(new Error("Karol kann keine schwarzen Ziegel platziern"));
 
         if (this.cellExists(x, y)) {
             return Err(new Error("Karol steht vor einer Wand und kann somit keinen Ziegel platzieren"));
