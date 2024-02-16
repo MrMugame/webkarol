@@ -6,7 +6,8 @@ const pathSuffix = ".kdp";
 
 const examples = [
     "Pyramide",
-    "Kreis"
+    "Kreis",
+    "Rule110"
 ];
 
 let div = document.getElementById("dropdown-examples")!;
