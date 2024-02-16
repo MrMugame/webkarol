@@ -9,11 +9,15 @@ import { Interpreter } from "../lang/interpreter.ts";
 import { World } from "./view/world.ts";
 import { KarolError, Result } from "../lang/util.ts";
 import { CabinetView } from "./view/cabinet.ts";
+import { BirdeyeView } from "./view/birdeye.ts";
 
 
 type Runner = Generator<void, Result<null, KarolError>, undefined>;
 
 class Controller {
+    private view: HTMLDivElement;
+    private currentView: "3D" | "2D";
+
     private editor: Editor;
     private world: World;
     private runner: Runner | null;
@@ -23,8 +27,11 @@ class Controller {
     constructor() {
         this.editor = new Editor(document.getElementById("editor")!);
         this.terminal = new Terminal(document.getElementById("bottom-panel-console")!);
-        //this.world = new World({x: 5, y: 10, z: 5}, new BirdeyeView(document.getElementById("view") as HTMLDivElement));
-        this.world = new World({x: 5, y: 10, z: 5}, new CabinetView(document.getElementById("view") as HTMLDivElement));
+
+        this.view = document.getElementById("view") as HTMLDivElement;
+        this.world = new World({x: 5, y: 10, z: 5}, new CabinetView(this.view));
+        this.currentView = "3D";
+
         this.running = false;
         this.runner = null;
 
@@ -148,6 +155,22 @@ class Controller {
     isRunning = () => this.running;
 
     getWorld = () => this.world;
+
+    setView3D() {
+        if (this.currentView === "3D") return;
+        this.currentView = "3D";
+        this.world.updateView(new CabinetView(this.view));
+    }
+
+    setView2D() {
+        if (this.currentView === "2D") return;
+        this.currentView = "2D";
+        this.world.updateView(new BirdeyeView(this.view));
+    }
+
+    getView() {
+        return this.currentView;
+    }
 }
 
 export let controller: Controller;

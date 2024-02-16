@@ -73,11 +73,18 @@ class World {
         this.size = size;
         this.view = view;
         this.view.setWorld(this);
+        this.view.init().then(() => this.view.redraw());
         this.world = new Array(this.size.x).fill(null).map(() => new Array(this.size.y).fill(null));
         this.player = { x: 0, y: 0, direction: Rotation.South };
         this.jumpable = 1;
 
-        this.view.init().then(() => this.view.redraw())
+    }
+
+    updateView(view: View) {
+        this.view.kill();
+        this.view = view;
+        this.view.setWorld(this);
+        this.view.init().then(() => this.view.redraw());
     }
 
     get cells(): Cell[][] {

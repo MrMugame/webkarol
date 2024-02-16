@@ -52,3 +52,15 @@ document.querySelector("#btn-q")!.addEventListener("click", () => {
 document.querySelector("#btn-e")!.addEventListener("click", () => {
     removeCuboid();
 });
+
+
+document.querySelector("#btn-view")!.addEventListener("click", () => {
+    // TODO: If its possible to change view from somethere else we have to take that into account
+    if (controller.getView() === "3D") {
+        controller.setView2D();
+    } else {
+        controller.setView3D();
+    }
+
+    document.querySelector("#btn-view")!.innerHTML = controller.getView();
+});

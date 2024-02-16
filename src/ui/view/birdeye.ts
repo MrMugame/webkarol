@@ -8,7 +8,7 @@ class BirdeyeView extends CanvasView {
         super(element);
     }
 
-    async init() { return; }
+    async init() {}
 
     protected drawBackground() {
         let ctx = this.initCanvas(this.background);
@@ -33,7 +33,7 @@ class BirdeyeView extends CanvasView {
     }
 
     protected drawForeground() {
-        let ctx = this.initCanvas(this.background);
+        let ctx = this.initCanvas(this.foreground);
         if (ctx === null) return;
         if (this.world === null) return;
 

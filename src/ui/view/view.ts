@@ -17,6 +17,7 @@ type Point = { x: number, y: number };
 
 interface View {
     init(): Promise<void>;
+    kill(): void;
     redraw(): void;
     // So I choose dependency injection here, so the world can change the view
     // easily without loosing all data. Caveat is that the view needs a reference
@@ -80,6 +81,8 @@ abstract class CanvasView implements View {
 
     kill() {
         this.observer.disconnect();
+        this.container.removeChild(this.foreground);
+        this.container.removeChild(this.background);
     }
 
     redraw() {
