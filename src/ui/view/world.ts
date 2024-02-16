@@ -87,6 +87,12 @@ class World {
         this.view.init().then(() => this.view.redraw());
     }
 
+    getView = (): View => this.view;
+
+    kill() {
+        this.view.kill();
+    }
+
     get cells(): Cell[][] {
         return this.world;
     }

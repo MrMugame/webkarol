@@ -81,8 +81,8 @@ class CabinetView extends CanvasView {
     private convert(x: number, y: number, z: number): {x: number, y: number} {
         // TODO: Maybe move this somethere else idk
         this.ORIGIN = {
-            x: this.world!.worldSize.x*BLOCKSIZE,
-            y: this.world!.worldSize.z*BLOCKSIZE,
+            x: this.world!.worldSize.y*BLOCKSIZE*0.5,
+            y: this.world!.worldSize.z*BLOCKSIZE*0.5 + BLOCKSIZE,
         }
 
         return {

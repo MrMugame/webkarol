@@ -53,7 +53,6 @@ document.querySelector("#btn-e")!.addEventListener("click", () => {
     removeCuboid();
 });
 
-
 document.querySelector("#btn-view")!.addEventListener("click", () => {
     // TODO: If its possible to change view from somethere else we have to take that into account
     if (controller.getView() === "3D") {
@@ -63,4 +62,26 @@ document.querySelector("#btn-view")!.addEventListener("click", () => {
     }
 
     document.querySelector("#btn-view")!.innerHTML = controller.getView();
+});
+
+
+const showIndicator = () => {
+    let indicator = document.querySelector("#indicator")!;
+    indicator.innerHTML = controller.getWorld().getView().getScale().toFixed(0) + "%";
+    indicator.classList.add("shown");
+    setTimeout(() => {
+        indicator.classList.remove("shown");
+    }, 1000);
+}
+
+document.querySelector("#btn-zoom-in")!.addEventListener("click", () => {
+    let view = controller.getWorld().getView()
+    view.setScale(view.getScale() + 5);
+    showIndicator();
+});
+
+document.querySelector("#btn-zoom-out")!.addEventListener("click", () => {
+    let view = controller.getWorld().getView()
+    view.setScale(view.getScale() - 5);
+    showIndicator();
 });

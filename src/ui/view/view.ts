@@ -19,6 +19,9 @@ interface View {
     init(): Promise<void>;
     kill(): void;
     redraw(): void;
+    // In percent
+    setScale(scale: number): void;
+    getScale(): number;
     // So I choose dependency injection here, so the world can change the view
     // easily without loosing all data. Caveat is that the view needs a reference
     // to the world and I couldn't come up with a better so solution, so this is it
@@ -38,6 +41,8 @@ abstract class CanvasView implements View {
     protected readonly foreground: HTMLCanvasElement;
 
     private readonly observer: ResizeObserver;
+
+    private scale: number = 1;
 
     constructor(element: HTMLDivElement) {
         this.container = element;
@@ -89,6 +94,16 @@ abstract class CanvasView implements View {
         this.drawForeground();
     }
 
+    setScale(scale: number): void {
+        if (scale <= 0 || scale > 250) return;
+        this.scale = scale/100;
+        this.updateScreen();
+    }
+
+    getScale(): number {
+        return this.scale*100;
+    }
+
     protected initCanvas(canvas: HTMLCanvasElement): CanvasRenderingContext2D | null {
         if (this.world === null) return null;
 
@@ -98,7 +113,7 @@ abstract class CanvasView implements View {
         ctx.save();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.translate(MARGIN.x+0.5, MARGIN.y+0.5);
-        // TODO: Scale
+        ctx.scale(this.scale, this.scale);
 
         return ctx;
     }

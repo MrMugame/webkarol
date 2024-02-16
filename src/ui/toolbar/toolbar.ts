@@ -1,6 +1,7 @@
 import "./file";
 import "./examples";
 import "./help";
+import "./world";
 
 
 const clearDropdowns = (except?: Element) => {

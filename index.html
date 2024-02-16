@@ -17,7 +17,6 @@
         <div class="dropdown-content">
           <button id="btn-bar-new">Neu</button>
           <button id="btn-bar-open">Öffnen</button>
-          <!-- <button>Speichern</button> -->
           <button id="btn-bar-saveas">Herunterladen</button>
         </div>
       </div>
@@ -26,6 +25,18 @@
       <div class="dropdown">
         <button class="dropdown-button">Beispiele</button>
         <div class="dropdown-content" id="dropdown-examples"></div>
+      </div>
+
+      <!-- World dropdown -->
+      <div class="dropdown">
+        <button class="dropdown-button">Welt</button>
+        <div class="dropdown-content">
+          <button id="btn-bar-new-world">Neue Welt</button>
+          <button id="btn-bar-reset-world">Welt zurücksetzen</button>
+          <!-- <button id="btn-bar-saveas">Welt öffnen</button> -->
+          <!-- <button id="btn-bar-saveas">Welt herunterladen</button> -->
+          <!-- <button id="btn-bar-saveas">Bild herunterladen</button> -->
+        </div>
       </div>
 
       <!-- Help dropdown -->
@@ -46,7 +57,9 @@
         <div id="left-panel-handle"></div>
       </div>
       <div id="right-panel">
-        <div id="view" tabindex="0"></div>
+        <div id="view" tabindex="0">
+          <p id="indicator">230%</p>
+        </div>
         <div id="bottom-panel">
           <div id="bottom-panel-bar">
             <button id="btn-start" title="Starten">
@@ -124,6 +137,18 @@
             <button id="btn-view" title="Hinlegen">
               3D
             </button>
+
+            <button id="btn-zoom-in" title="Vergrößern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.5 17.5L14.3242 14.3242M14.3242 14.3242C15.1837 13.4647 15.6666 12.2989 15.6666 11.0833C15.6666 9.86774 15.1837 8.70196 14.3242 7.84242C13.4647 6.98288 12.2989 6.5 11.0833 6.5C9.86774 6.5 8.70196 6.98288 7.84242 7.84242C6.98288 8.70196 6.5 9.86774 6.5 11.0833C6.5 12.2989 6.98288 13.4647 7.84242 14.3242C8.70196 15.1837 9.86774 15.6666 11.0833 15.6666C12.2989 15.6666 13.4647 15.1837 14.3242 14.3242ZM11.0836 9.25036V12.9169M12.9169 11.0836H9.25036"/>
+              </svg>
+            </button>
+
+            <button id="btn-zoom-out" title="Verkleinern">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.5 17.5L14.3242 14.3242M14.3242 14.3242C15.1837 13.4647 15.6666 12.2989 15.6666 11.0833C15.6666 9.86774 15.1837 8.70196 14.3242 7.84242C13.4647 6.98288 12.2989 6.5 11.0833 6.5C9.86774 6.5 8.70196 6.98288 7.84242 7.84242C6.98288 8.70196 6.5 9.86774 6.5 11.0833C6.5 12.2989 6.98288 13.4647 7.84242 14.3242C8.70196 15.1837 9.86774 15.6666 11.0833 15.6666C12.2989 15.6666 13.4647 15.1837 14.3242 14.3242ZM12.9169 11.0836H9.25036"/>
+              </svg>
+            </button>
           </div>
           <div id="bottom-panel-console"></div>
           <div id="bottom-panel-handle"></div>
@@ -148,6 +173,25 @@
       </div>
       <div class="content"></div>
       <div class="prompt">
+        <button class="confirm">Ok</button>
+      </div>
+    </dialog>
+
+    <dialog id="modal-new-world">
+      <div class="bar">
+        <h1>Neue Welt</h1>
+      </div>
+      <p>Geben Sie die Größe für die neue Welt ein</p>
+      <div class="content">
+        <label for="input-width">Breite</label>
+        <input type="number" id="input-width" min="1" max="100">
+        <label for="input-length">Länge</label>
+        <input type="number" id="input-length" min="1" max="100">
+        <label for="input-height">Höhe</label>
+        <input type="number" id="input-height" min="1" max="10">
+      </div>
+      <div class="prompt">
+        <button class="deny">Abbrechen</button>
         <button class="confirm">Ok</button>
       </div>
     </dialog>

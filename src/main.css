@@ -301,6 +301,39 @@ dialog::backdrop {
     color: #3b72ff;
 }
 
+#modal-new-world .content {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    grid-gap: 1rem;
+    margin: 1.5rem;
+    width: 15rem;
+    justify-content: center;
+}
+
+#modal-new-world label {
+    color: white;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    text-align: right;
+    display: flex;
+    align-items: center
+}
+
+#indicator {
+    display: none;
+    margin: 1rem;
+    font-family: sans-serif;
+    color: white;
+    opacity: 50%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+#indicator.shown {
+    display: block;
+}
+
 /* #bottom-panel-bar button:active {
     color: var(--color-blue1);
 } */

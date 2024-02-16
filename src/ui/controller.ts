@@ -29,8 +29,9 @@ class Controller {
         this.terminal = new Terminal(document.getElementById("bottom-panel-console")!);
 
         this.view = document.getElementById("view") as HTMLDivElement;
-        this.world = new World({x: 5, y: 10, z: 5}, new CabinetView(this.view));
         this.currentView = "3D";
+
+        this.world = new World({x: 5, y: 10, z: 6}, new CabinetView(this.view));
 
         this.running = false;
         this.runner = null;
@@ -170,6 +171,11 @@ class Controller {
 
     getView() {
         return this.currentView;
+    }
+
+    setWorld(x: number, y: number, z: number) {
+        this.world.kill();
+        this.world = new World({x, y, z}, this.currentView === "3D" ? new CabinetView(this.view) : new BirdeyeView(this.view));
     }
 }
 
