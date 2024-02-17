@@ -47,7 +47,7 @@ const commands: Map<string, WorldFunction<Result<null>>> = new Map([
     ["markesetzen",  { takesColor: true,  takesNum: false, func: (w: World, color: Color | null) => { w.setMark(color); return Ok(null); }}],
     ["markelöschen", { takesColor: false, takesNum: false, func: (w: World) => { w.removeMark(); return Ok(null); }}],
     // TODO: ["warten", { takesColor: false, takesNum: true, func: (w: World, num: number | null) => w.wait(num)}],
-    ["beenden",      { takesColor: false, takesNum: false, func: (w: World) => { controller.stop(); return Ok(null); }}],
+    ["beenden",      { takesColor: false, takesNum: false, func: (_: World) => { controller.stop(); return Ok(null); }}],
     ["ton", { takesColor: false, takesNum: false, func: (w: World) => { w.beep(); return Ok(null); }}]
 ]);
 
