@@ -349,8 +349,6 @@ class World {
         beep.play();
     }
 
-    // TODO: Backpack
-
 }
 
 export { World, CellType, Color, Rotation }

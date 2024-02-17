@@ -1,3 +1,4 @@
+import { controller } from "../ui/controller";
 import { Color, Rotation, World } from "../ui/view/world";
 import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, InftyLoopStmt, IterLoopStmt, ProgDecl, Stmt, TruthStmt } from "./ast";
 import { KarolError, Result, assert, flatten, is } from "./util";
@@ -15,7 +16,6 @@ type WorldFunction<T> = {takesColor: false, takesNum: false, func: (w: World) =>
     | {takesColor: false, takesNum: true, func: (w: World, num: number | null) => T}
     | {takesColor: true, takesNum: true, func: (w: World, color: Color | null, num: number | null) => T};
 
-// TODO: Handle black
 // TODO: IstVoll, NichtIstVoll, IstLeer, NichtIstLeer, HatZiegel, HatZiegel(Anzahl)
 const conditions: Map<string, WorldFunction<boolean>> = new Map([
     ["istwand",        { takesColor: false, takesNum: false, func: (w: World) => w.isWall()}],
@@ -47,9 +47,12 @@ const commands: Map<string, WorldFunction<Result<null>>> = new Map([
     ["markesetzen",  { takesColor: true,  takesNum: false, func: (w: World, color: Color | null) => { w.setMark(color); return Ok(null); }}],
     ["markelöschen", { takesColor: false, takesNum: false, func: (w: World) => { w.removeMark(); return Ok(null); }}],
     // TODO: ["warten", { takesColor: false, takesNum: true, func: (w: World, num: number | null) => w.wait(num)}],
-    // TODO: Beenden
+    ["beenden",      { takesColor: false, takesNum: false, func: (w: World) => { controller.stop(); return Ok(null); }}],
     ["ton", { takesColor: false, takesNum: false, func: (w: World) => { w.beep(); return Ok(null); }}]
 ]);
+
+// Export for use in the parser
+export { conditions, commands }
 
 const Err = Result.Err, Ok = Result.Ok;
 type RuntimeResult<T> = Result<T, KarolError>;

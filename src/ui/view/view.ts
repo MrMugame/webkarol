@@ -9,7 +9,8 @@ const COLORS: Map<Color, ColorPair> = new Map([
     [Color.Yellow, { background: "#cdcd00", stroke: "#ffff00" }],
     [Color.Green, { background: "#00cd00", stroke: "#00ff00" }],
     [Color.Red, { background: "#cd0000", stroke: "#ff0000" }],
-    [Color.Blue, { background: "#0000cd", stroke: "#0000ff" }]
+    [Color.Blue, { background: "#0000cd", stroke: "#0000ff" }],
+    [Color.Black, { background: "#000000", stroke: "#000000" }]
 ]);
 const GREY: ColorPair = { background: "#404040", stroke: "#808080" };
 

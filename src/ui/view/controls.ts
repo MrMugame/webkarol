@@ -38,8 +38,6 @@ const removeCuboid = () => {
     controller.getWorld().removeCuboid();
 }
 
-// TODO: Reading property yof undefined
-
 document.getElementById("view")!.addEventListener("keydown", (event) => {
     if (controller.isRunning()) return;
 

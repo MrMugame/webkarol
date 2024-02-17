@@ -22,8 +22,6 @@ const colorToImage = (imgs: ColoredImages, color: Color): HTMLImageElement => {
 class CabinetView extends CanvasView {
     private initQueue: Promise<void>[]
 
-    private ORIGIN: {x: number, y: number} = { x: 0, y: 0}
-
     private PLAYER_IMG: {
         north: HTMLImageElement,
         east: HTMLImageElement,
@@ -82,15 +80,14 @@ class CabinetView extends CanvasView {
     }
 
     private convert(x: number, y: number, z: number): {x: number, y: number} {
-        // TODO: Maybe move this somethere else idk
-        this.ORIGIN = {
+        let origin = {
             x: this.world!.worldSize.y*BLOCKSIZE*0.5,
             y: this.world!.worldSize.z*BLOCKSIZE*0.5 + BLOCKSIZE,
         }
 
         return {
-            x: this.ORIGIN.x + 1*x - 0.5*y,
-            y: this.ORIGIN.y + 0.5*y - 0.5*z
+            x: origin.x + 1*x - 0.5*y,
+            y: origin.y + 0.5*y - 0.5*z
         }
     }
 

@@ -46,8 +46,6 @@ class BirdeyeView extends CanvasView {
 
                 let [a, b, c, d] = [x+M, y+M, BLOCKSIZE-M*2, BLOCKSIZE-M*2];
                 if (cell.kind === CellType.Bricks) {
-                    // TODO: Make color changable
-
                     ctx.lineWidth = M;
                     if (cell.mark !== null) {
                         ctx.fillStyle = COLORS.get(cell.mark)!.stroke;

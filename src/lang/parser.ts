@@ -2,11 +2,10 @@ import { Lexer } from "./lexer";
 import { Span, TokenType as TK } from "./tokens";
 import { KarolError, Result, assert, copy, is } from "./util";
 import { CallStmt, CondDecl, CondLoopStmt, CondStmt, Decl, FuncDecl, IfStmt, InftyLoopStmt, IterLoopStmt, ProgDecl, Stmt, TruthStmt } from "./ast"
+import { commands, conditions } from "./interpreter";
 
 const Err = Result.Err, Ok = Result.Ok;
 type ParseResult<T> = Result<T, KarolError>;
-
-// TODO: builtin functions arent allowed to be redeclared
 
 // This language is probably easy enough to be implemented without a parser,
 // by just reading and intrepreting the text directly, but ... yeah ... we
@@ -102,6 +101,7 @@ export class Parser extends Lexer {
 
 		let name = this.currToken.value;
 		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError("Karol erwartet nach dem Wort `Bedingung` einen Namen", this.location()));
+		if (commands.has(name!.toLowerCase()) || conditions.has(name!.toLowerCase())) return Err(new KarolError("Interne Funktionen können nicht überschrieben werden", this.location()));
 
 		let body = this.parseBody(TK.ENDE_BEDINGUNG);
 		if (!body.isOk()) return Err(body.unwrapErr());
@@ -118,6 +118,7 @@ export class Parser extends Lexer {
 
 		let name = this.currToken.value;
 		if (!this.consume(TK.IDENTIFIER)) return Err(new KarolError("Karol erwartet nach dem Wort `Anweisung` einen Namen", this.location()));
+		if (commands.has(name!.toLowerCase()) || conditions.has(name!.toLowerCase())) return Err(new KarolError("Interne Funktionen können nicht überschrieben werden", this.location()));
 
 		let body = this.parseBody(TK.ENDE_ANWEISUNG);
 		if (!body.isOk()) return Err(body.unwrapErr());
