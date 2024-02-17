@@ -153,8 +153,8 @@ class CabinetView extends CanvasView {
         if (this.world === null) return;
 
         for (let y = 0; y < this.world.worldSize.y; y++) {
-            for (let z = 0; z < this.world.worldSize.z; z++) {
-                for (let x = 0; x < this.world.worldSize.x; x++) {
+            for (let x = 0; x < this.world.worldSize.x; x++) {
+                for (let z = 0; z < this.world.worldSize.z; z++) {
                     let cell = this.world.cells[x][y];
 
                     if (cell?.kind === CellType.Bricks && cell.bricks.length > z) {
